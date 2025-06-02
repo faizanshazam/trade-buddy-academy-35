@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 
@@ -15,19 +16,23 @@ export const Hero = () => {
           SEBI-verified professionals. From beginner basics to advanced strategies.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-          <Button 
-            size="lg" 
-            className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3"
-          >
-            Explore Courses
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="text-lg px-8 py-3"
-          >
-            Browse Mentors
-          </Button>
+          <Link to="/explore">
+            <Button 
+              size="lg" 
+              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-3"
+            >
+              Explore Courses
+            </Button>
+          </Link>
+          <Link to="/explore">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-lg px-8 py-3"
+            >
+              Browse Mentors
+            </Button>
+          </Link>
         </div>
         
         {/* Trust indicators */}
