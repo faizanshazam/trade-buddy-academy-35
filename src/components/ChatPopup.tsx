@@ -158,7 +158,6 @@ const ChatPopup = ({ mentorName, mentorId, onClose }: ChatPopupProps) => {
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
               className="flex-1 text-xs"
-              size="sm"
             />
             <Button type="submit" size="sm" className="px-2">
               <Send className="w-3 h-3" />
