@@ -6,6 +6,17 @@ import { Menu, X } from "lucide-react";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // This would come from auth context in real app
+
+  const handleLogin = () => {
+    // This would handle actual login in a real app
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    // This would handle actual logout in a real app
+    setIsLoggedIn(false);
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
@@ -19,11 +30,27 @@ export const Navigation = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/explore" className="text-gray-700 hover:text-blue-600 transition-colors">Courses</Link>
             <Link to="/explore" className="text-gray-700 hover:text-blue-600 transition-colors">Mentors</Link>
-            <Link to="/faq" className="text-gray-700 hover:text-blue-600 transition-colors">How it Works</Link>
-            <Button variant="outline" className="mr-2">Login</Button>
-            <Link to="/student-dashboard">
-              <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
-            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">About</Link>
+            <Link to="/faq" className="text-gray-700 hover:text-blue-600 transition-colors">FAQ</Link>
+            <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</Link>
+            
+            {isLoggedIn ? (
+              <>
+                <Link to="/student-dashboard">
+                  <Button variant="outline" className="mr-2">Dashboard</Button>
+                </Link>
+                <Button onClick={handleLogout} variant="outline">Logout</Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" className="mr-2">Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -44,12 +71,28 @@ export const Navigation = () => {
             <div className="flex flex-col space-y-4">
               <Link to="/explore" className="text-gray-700 hover:text-blue-600">Courses</Link>
               <Link to="/explore" className="text-gray-700 hover:text-blue-600">Mentors</Link>
-              <Link to="/faq" className="text-gray-700 hover:text-blue-600">How it Works</Link>
+              <Link to="/about" className="text-gray-700 hover:text-blue-600">About</Link>
+              <Link to="/faq" className="text-gray-700 hover:text-blue-600">FAQ</Link>
+              <Link to="/contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
+              
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="outline">Login</Button>
-                <Link to="/student-dashboard">
-                  <Button className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
-                </Link>
+                {isLoggedIn ? (
+                  <>
+                    <Link to="/student-dashboard">
+                      <Button variant="outline" className="w-full">Dashboard</Button>
+                    </Link>
+                    <Button onClick={handleLogout} variant="outline" className="w-full">Logout</Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login">
+                      <Button variant="outline" className="w-full">Login</Button>
+                    </Link>
+                    <Link to="/signup">
+                      <Button className="bg-blue-600 hover:bg-blue-700 w-full">Sign Up</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -4,16 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Clock, Users, Calendar, MessageSquare } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const CourseDetails = () => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
 
   // Mock course data
   const course = {
     id: 1,
     title: "Complete Options Trading Mastery",
     instructor: "Rajesh Kumar",
+    instructorId: 1,
     type: "Full Course",
     price: "₹12,999",
     duration: "15-20 hours",
@@ -50,6 +52,19 @@ const CourseDetails = () => {
     "Dec 16, 6:00 PM",
     "Dec 17, 6:00 PM"
   ];
+
+  const handleEnrollNow = () => {
+    navigate(`/checkout?courseId=${courseId}&traderId=${course.instructorId}`);
+  };
+
+  const handleContactInstructor = () => {
+    navigate(`/trader/${course.instructorId}`);
+  };
+
+  const handleSlotSelect = (slot: string) => {
+    console.log("Selected slot:", slot);
+    // Handle slot selection
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -133,10 +148,17 @@ const CourseDetails = () => {
                   ))}
                 </div>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 mb-4">
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700 mb-4"
+                  onClick={handleEnrollNow}
+                >
                   Enroll Now
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleContactInstructor}
+                >
                   Contact Instructor
                 </Button>
               </CardContent>
@@ -151,6 +173,7 @@ const CourseDetails = () => {
                     <button
                       key={index}
                       className="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                      onClick={() => handleSlotSelect(slot)}
                     >
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-gray-500" />

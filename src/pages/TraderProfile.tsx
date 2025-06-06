@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Users, Clock, MessageSquare } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const TraderProfile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Mock trader data
   const trader = {
@@ -55,6 +56,14 @@ const TraderProfile = () => {
     }
   ];
 
+  const handleBookNow = (courseId: number) => {
+    navigate(`/checkout?courseId=${courseId}&traderId=${id}`);
+  };
+
+  const handleContactInstructor = () => {
+    navigate(`/contact?subject=Contact%20${trader.name}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -96,6 +105,16 @@ const TraderProfile = () => {
                   <p><strong>Languages:</strong> {trader.languages.join(", ")}</p>
                   <p><strong>Availability:</strong> {trader.availability}</p>
                 </div>
+                <div className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleContactInstructor}
+                    className="mr-4"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Contact Instructor
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -128,7 +147,10 @@ const TraderProfile = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold text-blue-600">{course.price}</span>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
+                    <Button 
+                      className="bg-blue-600 hover:bg-blue-700"
+                      onClick={() => handleBookNow(course.id)}
+                    >
                       Book Now
                     </Button>
                   </div>
