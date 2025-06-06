@@ -53,11 +53,29 @@ const TraderProfile = () => {
       duration: "1 hour",
       price: "₹1,999",
       included: ["Live consultation", "Strategy review", "Q&A session"]
+    },
+    {
+      id: 4,
+      type: "Full Course",
+      title: "Advanced Options Strategies",
+      description: "Master complex options strategies for professional trading",
+      duration: "12-15 hours + 2 weeks group chat",
+      price: "₹15,999",
+      included: ["Advanced strategies", "Live market analysis", "Risk management", "Pro tools"]
+    },
+    {
+      id: 5,
+      type: "Workshop",
+      title: "Weekend Options Workshop",
+      description: "Intensive weekend workshop on options trading",
+      duration: "2 days (16 hours)",
+      price: "₹5,999",
+      included: ["Weekend sessions", "Hands-on practice", "Trading simulator", "Resources"]
     }
   ];
 
   const handleBookNow = (courseId: number) => {
-    navigate(`/checkout?courseId=${courseId}&traderId=${id}`);
+    navigate(`/course/${courseId}?traderId=${id}`);
   };
 
   const handleContactInstructor = () => {

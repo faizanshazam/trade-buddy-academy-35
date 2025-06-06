@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface TraderCardProps {
   trader: {
@@ -20,6 +21,17 @@ interface TraderCardProps {
 }
 
 export const TraderCard = ({ trader }: TraderCardProps) => {
+  const navigate = useNavigate();
+
+  const handleViewProfile = () => {
+    navigate(`/trader/${trader.id}`);
+  };
+
+  const handleQuickChat = () => {
+    // Navigate to course details with chat functionality
+    navigate(`/course/1?traderId=${trader.id}&chat=true`);
+  };
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
       <CardContent className="p-6">
@@ -62,10 +74,18 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
         </div>
 
         <div className="flex gap-2">
-          <Button className="flex-1 bg-blue-600 hover:bg-blue-700" size="sm">
+          <Button 
+            className="flex-1 bg-blue-600 hover:bg-blue-700" 
+            size="sm"
+            onClick={handleViewProfile}
+          >
             View Profile
           </Button>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleQuickChat}
+          >
             Quick Chat
           </Button>
         </div>

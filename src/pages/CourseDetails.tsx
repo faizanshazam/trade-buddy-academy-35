@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Clock, Users, Calendar, MessageSquare } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import CourseChat from "@/components/CourseChat";
 
 const CourseDetails = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const showChat = searchParams.get('chat') === 'true';
 
   // Mock course data
   const course = {
@@ -126,6 +129,14 @@ const CourseDetails = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Chat Section - Show if chat parameter is true */}
+            {showChat && (
+              <CourseChat 
+                mentorName={course.instructor}
+                courseTitle={course.title}
+              />
+            )}
           </div>
 
           {/* Sidebar */}

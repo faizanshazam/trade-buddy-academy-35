@@ -7,7 +7,7 @@ import { TraderCard } from "@/components/TraderCard";
 const Explore = () => {
   const [activeFilter, setActiveFilter] = useState("Full Course");
 
-  // Mock data for traders
+  // Extended mock data for traders/mentors
   const traders = [
     {
       id: 1,
@@ -44,6 +44,42 @@ const Explore = () => {
       speciality: "Technical Analysis",
       experience: "10+ years",
       studentsCount: 300
+    },
+    {
+      id: 4,
+      name: "Neha Patel",
+      photo: "/placeholder.svg",
+      rating: 4.9,
+      languages: ["English", "Gujarati"],
+      qualification: "MBA, CFA",
+      sebiVerified: true,
+      speciality: "Swing Trading",
+      experience: "7+ years",
+      studentsCount: 180
+    },
+    {
+      id: 5,
+      name: "Vikram Singh",
+      photo: "/placeholder.svg",
+      rating: 4.6,
+      languages: ["Hindi", "English", "Punjabi"],
+      qualification: "NISM, FRM",
+      sebiVerified: true,
+      speciality: "Intraday Trading",
+      experience: "5+ years",
+      studentsCount: 250
+    },
+    {
+      id: 6,
+      name: "Anita Reddy",
+      photo: "/placeholder.svg",
+      rating: 4.8,
+      languages: ["English", "Telugu"],
+      qualification: "CA, CFA",
+      sebiVerified: true,
+      speciality: "Commodity Trading",
+      experience: "9+ years",
+      studentsCount: 120
     }
   ];
 
