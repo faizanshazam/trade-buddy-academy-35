@@ -1,56 +1,58 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // This would come from auth context in real app
+  const location = useLocation();
 
-  const handleLogin = () => {
-    // This would handle actual login in a real app
-    setIsLoggedIn(true);
-  };
+  const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Explore", path: "/explore" },
+    { name: "Courses", path: "/courses" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+  ];
 
-  const handleLogout = () => {
-    // This would handle actual logout in a real app
-    setIsLoggedIn(false);
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+    <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-blue-900">TradeMentor</Link>
-          </div>
-          
+          <Link to="/" className="flex items-center">
+            <span className="text-2xl font-bold text-blue-600">TradeMentor</span>
+          </Link>
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/explore" className="text-gray-700 hover:text-blue-600 transition-colors">Courses</Link>
-            <Link to="/explore" className="text-gray-700 hover:text-blue-600 transition-colors">Mentors</Link>
-            <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">About</Link>
-            <Link to="/faq" className="text-gray-700 hover:text-blue-600 transition-colors">FAQ</Link>
-            <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</Link>
-            
-            {isLoggedIn ? (
-              <>
-                <Link to="/student-dashboard">
-                  <Button variant="outline" className="mr-2">Dashboard</Button>
-                </Link>
-                <Button onClick={handleLogout} variant="outline">Logout</Button>
-              </>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button variant="outline" className="mr-2">Login</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
-                </Link>
-              </>
-            )}
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive(item.path) ? "text-blue-600 border-b-2 border-blue-600" : ""
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link to="/login">
+              <Button variant="outline" size="sm">
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                Sign Up
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -67,32 +69,33 @@ export const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <div className="flex flex-col space-y-4">
-              <Link to="/explore" className="text-gray-700 hover:text-blue-600">Courses</Link>
-              <Link to="/explore" className="text-gray-700 hover:text-blue-600">Mentors</Link>
-              <Link to="/about" className="text-gray-700 hover:text-blue-600">About</Link>
-              <Link to="/faq" className="text-gray-700 hover:text-blue-600">FAQ</Link>
-              <Link to="/contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
-              
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    isActive(item.path)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
               <div className="flex flex-col space-y-2 pt-4">
-                {isLoggedIn ? (
-                  <>
-                    <Link to="/student-dashboard">
-                      <Button variant="outline" className="w-full">Dashboard</Button>
-                    </Link>
-                    <Button onClick={handleLogout} variant="outline" className="w-full">Logout</Button>
-                  </>
-                ) : (
-                  <>
-                    <Link to="/login">
-                      <Button variant="outline" className="w-full">Login</Button>
-                    </Link>
-                    <Link to="/signup">
-                      <Button className="bg-blue-600 hover:bg-blue-700 w-full">Sign Up</Button>
-                    </Link>
-                  </>
-                )}
+                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                    Sign Up
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
