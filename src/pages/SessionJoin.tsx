@@ -18,10 +18,11 @@ const SessionJoin = () => {
   const mentorName = searchParams.get('mentor') || 'Rajesh Kumar';
   const startTime = searchParams.get('time') || '6:00 PM';
   
-  // Real Zoom meeting details
+  // Real Zoom meeting details with auto-join parameters
   const zoomMeetingId = "734 1285 1786";
-  const zoomPassword = "dOjJzbWlZ9X9U5c2IcBRuuT3bG2hRE.1";
-  const zoomWebUrl = "https://us04web.zoom.us/wc/join/73412851786?pwd=dOjJzbWlZ9X9U5c2IcBRuuT3bG2hRE.1";
+  const zoomPassword = "SS2025";
+  const userName = "XYZUser";
+  const zoomWebUrl = `https://us04web.zoom.us/wc/join/73412851786?pwd=dOjJzbWlZ9X9U5c2IcBRuuT3bG2hRE.1&uname=${encodeURIComponent(userName)}&tk=&zm_hf=false`;
 
   const handleJoinSession = () => {
     setIsJoining(true);
@@ -33,9 +34,51 @@ const SessionJoin = () => {
     }, 2000);
   };
 
+  const handleLeaveMeeting = () => {
+    setHasJoined(false);
+    setIsJoining(false);
+  };
+
   useEffect(() => {
     console.log("Session joining page loaded for session:", sessionId);
-  }, [sessionId]);
+
+    // Listen for messages from the iframe to detect when user leaves
+    const handleMessage = (event: MessageEvent) => {
+      // Check if the message is from Zoom and indicates the meeting has ended or user left
+      if (event.data && typeof event.data === 'string') {
+        if (event.data.includes('meeting_ended') || 
+            event.data.includes('user_left') || 
+            event.data.includes('disconnected')) {
+          handleLeaveMeeting();
+        }
+      }
+    };
+
+    // Add event listener for iframe messages
+    window.addEventListener('message', handleMessage);
+    
+    // Also listen for focus events to detect when user comes back to the tab
+    const handleFocus = () => {
+      // Check if the iframe is still active
+      const iframe = document.querySelector('iframe[title="Zoom Meeting"]') as HTMLIFrameElement;
+      if (iframe && hasJoined) {
+        try {
+          // If we can't access the iframe content, it might mean the meeting ended
+          iframe.contentWindow?.postMessage('ping', '*');
+        } catch (error) {
+          // If there's an error, assume the meeting ended
+          handleLeaveMeeting();
+        }
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [sessionId, hasJoined]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,6 +117,7 @@ const SessionJoin = () => {
                   <div className="pt-4 border-t">
                     <p className="text-xs text-gray-500 mb-2">Meeting ID: {zoomMeetingId}</p>
                     <p className="text-xs text-gray-500 break-all">Password: {zoomPassword}</p>
+                    <p className="text-xs text-gray-500">Joining as: {userName}</p>
                   </div>
                   
                   <Button 
@@ -125,6 +169,7 @@ const SessionJoin = () => {
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">Ready to join?</h3>
                         <p className="text-gray-600">Click "Join Session" to connect to the live session</p>
+                        <p className="text-sm text-gray-500 mt-2">You'll join as {userName}</p>
                       </div>
                     </div>
                   </div>
@@ -133,17 +178,28 @@ const SessionJoin = () => {
             </div>
           </div>
         ) : (
-          <div className="h-screen -mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
-            <iframe
-              src={zoomWebUrl}
-              width="100%"
-              height="100%"
-              frameBorder="0"
-              allow="camera *; microphone *; fullscreen *; speaker *; display-capture *; autoplay *; encrypted-media *; clipboard-write *"
-              className="w-full h-full"
-              title="Zoom Meeting"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-downloads allow-modals"
-            />
+          <div className="relative">
+            <div className="fixed top-4 right-4 z-50">
+              <Button 
+                onClick={handleLeaveMeeting}
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Leave Meeting
+              </Button>
+            </div>
+            <div className="h-screen -mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
+              <iframe
+                src={zoomWebUrl}
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                allow="camera *; microphone *; fullscreen *; speaker *; display-capture *; autoplay *; encrypted-media *; clipboard-write *"
+                className="w-full h-full"
+                title="Zoom Meeting"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-downloads allow-modals allow-top-navigation"
+              />
+            </div>
           </div>
         )}
       </div>
