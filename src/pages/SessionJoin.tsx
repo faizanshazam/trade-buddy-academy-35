@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -41,40 +42,40 @@ const SessionJoin = () => {
       <Navigation />
       
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Session Info */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Video className="w-5 h-5" />
-                  Session Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-gray-900">{sessionTitle}</h3>
-                  <p className="text-sm text-gray-600">with {mentorName}</p>
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="w-4 h-4" />
-                  <span>Started at {startTime}</span>
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users className="w-4 h-4" />
-                  <span>47 participants</span>
-                </div>
-                
-                <Badge className="bg-green-100 text-green-800">Live</Badge>
-                
-                <div className="pt-4 border-t">
-                  <p className="text-xs text-gray-500 mb-2">Meeting ID: {zoomMeetingId}</p>
-                  <p className="text-xs text-gray-500 break-all">Password: {zoomPassword}</p>
-                </div>
-                
-                {!hasJoined ? (
+        {!hasJoined ? (
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Session Info */}
+            <div className="lg:col-span-1 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Video className="w-5 h-5" />
+                    Session Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{sessionTitle}</h3>
+                    <p className="text-sm text-gray-600">with {mentorName}</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Clock className="w-4 h-4" />
+                    <span>Started at {startTime}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Users className="w-4 h-4" />
+                    <span>47 participants</span>
+                  </div>
+                  
+                  <Badge className="bg-green-100 text-green-800">Live</Badge>
+                  
+                  <div className="pt-4 border-t">
+                    <p className="text-xs text-gray-500 mb-2">Meeting ID: {zoomMeetingId}</p>
+                    <p className="text-xs text-gray-500 break-all">Password: {zoomPassword}</p>
+                  </div>
+                  
                   <Button 
                     onClick={handleJoinSession}
                     disabled={isJoining}
@@ -82,62 +83,42 @@ const SessionJoin = () => {
                   >
                     {isJoining ? "Joining..." : "Join Session"}
                   </Button>
-                ) : (
-                  <div className="flex items-center gap-2 text-green-600 text-sm">
-                    <Shield className="w-4 h-4" />
-                    <span>Connected to session</span>
+                </CardContent>
+              </Card>
+              
+              {/* Session Guidelines */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Session Guidelines</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
+                    <span>Keep your microphone muted unless speaking</span>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
+                    <span>Use the chat for questions</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
+                    <span>Recording will be available after the session</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
+                    <span>No financial advice - educational purposes only</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             
-            {/* Session Guidelines */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Session Guidelines</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span>Keep your microphone muted unless speaking</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span>Use the chat for questions</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span>Recording will be available after the session</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mt-1.5 flex-shrink-0"></div>
-                  <span>No financial advice - educational purposes only</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Zoom Meeting Embed */}
-          <div className="lg:col-span-2">
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle>Live Session</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                {hasJoined ? (
-                  <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden">
-                    <iframe
-                      src={zoomWebUrl}
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      allow="camera; microphone; fullscreen; speaker; display-capture"
-                      className="w-full h-full"
-                      title="Zoom Meeting"
-                      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
-                    />
-                  </div>
-                ) : (
+            {/* Zoom Meeting Embed */}
+            <div className="lg:col-span-2">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Live Session</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
                   <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
                     <div className="text-center space-y-4">
                       <Video className="w-16 h-16 text-gray-400 mx-auto" />
@@ -147,11 +128,24 @@ const SessionJoin = () => {
                       </div>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="h-screen -mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
+            <iframe
+              src={zoomWebUrl}
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allow="camera *; microphone *; fullscreen *; speaker *; display-capture *; autoplay *; encrypted-media *; clipboard-write *"
+              className="w-full h-full"
+              title="Zoom Meeting"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-downloads allow-modals"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
