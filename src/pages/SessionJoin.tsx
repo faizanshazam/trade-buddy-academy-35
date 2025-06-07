@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -19,9 +18,9 @@ const SessionJoin = () => {
   const startTime = searchParams.get('time') || '6:00 PM';
   
   // Real Zoom meeting details
-  const zoomMeetingId = "764 6149 6984";
-  const zoomPassword = "IKFDasjpE75SCyaP6kRxYhanR7H2nZ.1";
-  const zoomWebUrl = "https://us04web.zoom.us/wc/join/76461496984?pwd=IKFDasjpE75SCyaP6kRxYhanR7H2nZ.1";
+  const zoomMeetingId = "734 1285 1786";
+  const zoomPassword = "dOjJzbWlZ9X9U5c2IcBRuuT3bG2hRE.1";
+  const zoomWebUrl = "https://us04web.zoom.us/wc/join/73412851786?pwd=dOjJzbWlZ9X9U5c2IcBRuuT3bG2hRE.1";
 
   const handleJoinSession = () => {
     setIsJoining(true);
