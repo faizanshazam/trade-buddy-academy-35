@@ -18,10 +18,10 @@ const SessionJoin = () => {
   const mentorName = searchParams.get('mentor') || 'Rajesh Kumar';
   const startTime = searchParams.get('time') || '6:00 PM';
   
-  // Mock Zoom meeting details
-  const zoomMeetingId = "123-456-7890";
-  const zoomPassword = "trading123";
-  const zoomJoinUrl = `https://zoom.us/wv2/to/join/webinar?webinarId=${sessionId}&pwd=${zoomPassword}`;
+  // Real Zoom meeting details
+  const zoomMeetingId = "764 6149 6984";
+  const zoomPassword = "IKFDasjpE75SCyaP6kRxYhanR7H2nZ.1";
+  const zoomWebUrl = "https://us04web.zoom.us/wc/join/76461496984?pwd=IKFDasjpE75SCyaP6kRxYhanR7H2nZ.1";
 
   const handleJoinSession = () => {
     setIsJoining(true);
@@ -72,7 +72,7 @@ const SessionJoin = () => {
                 
                 <div className="pt-4 border-t">
                   <p className="text-xs text-gray-500 mb-2">Meeting ID: {zoomMeetingId}</p>
-                  <p className="text-xs text-gray-500">Password: {zoomPassword}</p>
+                  <p className="text-xs text-gray-500 break-all">Password: {zoomPassword}</p>
                 </div>
                 
                 {!hasJoined ? (
@@ -128,13 +128,14 @@ const SessionJoin = () => {
                 {hasJoined ? (
                   <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden">
                     <iframe
-                      src={zoomJoinUrl}
+                      src={zoomWebUrl}
                       width="100%"
                       height="100%"
                       frameBorder="0"
                       allow="camera; microphone; fullscreen; speaker; display-capture"
                       className="w-full h-full"
                       title="Zoom Meeting"
+                      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
                     />
                   </div>
                 ) : (
