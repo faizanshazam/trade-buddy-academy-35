@@ -99,3 +99,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix for Zoom Web SDK scaling the whole app */
+body, html {
+  transform: none !important;
+  zoom: 1 !important;
+  font-size: 16px !important;
+}
+
+#zmmtg-root,
+#zmmtg-root * {
+  zoom: 1 !important;
+  transform: none !important;
+  font-size: 1rem !important;
+}
+
+/* Reset inline styles that Zoom might inject */
+body[style*="transform"], html[style*="transform"] {
+  transform: none !important;
+}
+body[style*="zoom"], html[style*="zoom"] {
+  zoom: 1 !important;
+}

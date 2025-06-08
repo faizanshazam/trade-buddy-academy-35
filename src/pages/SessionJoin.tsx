@@ -1,99 +1,112 @@
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Clock, Video, Shield } from "lucide-react";
+import { Users, Clock, Video } from "lucide-react";
+
+import { ZoomMtg } from "@zoom/meetingsdk";
+import "@zoom/meetingsdk/dist/css/bootstrap.css";
+import "@zoom/meetingsdk/dist/css/react-select.css";
 
 const SessionJoin = () => {
   const { sessionId } = useParams();
   const [searchParams] = useSearchParams();
   const [isJoining, setIsJoining] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
-  
-  // Get session details from URL params or mock data
-  const sessionTitle = searchParams.get('title') || 'Live Trading Session';
-  const mentorName = searchParams.get('mentor') || 'Rajesh Kumar';
-  const startTime = searchParams.get('time') || '6:00 PM';
-  
-  // Real Zoom meeting details with auto-join parameters
-  const zoomMeetingId = "734 1285 1786";
-  const zoomPassword = "SS2025";
-  const userName = "XYZUser";
-  const zoomWebUrl = `https://us04web.zoom.us/wc/join/73412851786?pwd=dOjJzbWlZ9X9U5c2IcBRuuT3bG2hRE.1&uname=${encodeURIComponent(userName)}&tk=&zm_hf=false`;
+  const [signature, setSignature] = useState<string | null>(null);
+  const [isSdkReady, setIsSdkReady] = useState(false);
 
-  const handleJoinSession = () => {
-    setIsJoining(true);
-    
-    // Simulate joining process
-    setTimeout(() => {
-      setIsJoining(false);
-      setHasJoined(true);
-    }, 2000);
+  const sessionTitle = searchParams.get("title") || "Live Trading Session";
+  const mentorName = searchParams.get("mentor") || "Rajesh Kumar";
+  const startTime = searchParams.get("time") || "6:00 PM";
+
+  const meetingNumber = "71509380993";
+  const passWord = "SS2025";
+  const userName = "XYZUser";
+  const sdkKey = "13uzy1wwRfCajEKdERsfHQ";
+
+  const joinMeeting = (signature: string) => {
+    const zoomRoot = document.getElementById("zmmtg-root");
+    if (zoomRoot) zoomRoot.style.display = "block";
+
+    ZoomMtg.init({
+      leaveUrl: window.location.href,
+      success: () => {
+        ZoomMtg.join({
+          sdkKey,
+          signature,
+          meetingNumber,
+          userName,
+          passWord,
+          success: () => {
+            console.log("🎥 Joined Zoom meeting");
+          },
+          error: (err: any) => {
+            console.error("❌ Join error", err);
+            alert("Join failed. Check credentials or signature.");
+          },
+        });
+      },
+      error: (err: any) => {
+        console.error("❌ Init error", err);
+        alert("Zoom SDK init failed.");
+      },
+    });
   };
 
-  const handleLeaveMeeting = () => {
-    setHasJoined(false);
+  const handleJoinSession = async () => {
+    setIsJoining(true);
+    const sig = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZGtLZXkiOiIxM3V6eTF3d1JmQ2FqRUtkRVJzZkhRIiwibW4iOiI3MTUwOTM4MDk5MyIsInJvbGUiOjAsImlhdCI6MTc0OTM3MTI0MiwiZXhwIjoxNzQ5Mzc0ODQyLCJhcHBLZXkiOiIxM3V6eTF3d1JmQ2FqRUtkRVJzZkhRIiwidG9rZW5FeHAiOjE3NDkzNzQ4NDJ9.I5OcPGTP4CgzGdUjC5O2Ed8tpjF78MvkcMmWLoJ1D4k";
+    if (sig) {
+      setSignature(sig);
+      setHasJoined(true);
+      joinMeeting(sig);
+    } else {
+      alert("Unable to join session. Signature error.");
+    }
     setIsJoining(false);
   };
 
+  const handleLeaveMeeting = () => {
+    window.location.reload();
+  };
+
   useEffect(() => {
-    console.log("Session joining page loaded for session:", sessionId);
+    console.log("SessionJoin loaded for:", sessionId);
+  }, [sessionId]);
 
-    // Listen for messages from the iframe to detect when user leaves
-    const handleMessage = (event: MessageEvent) => {
-      // Check if the message is from Zoom and indicates the meeting has ended or user left
-      if (event.data && typeof event.data === 'string') {
-        if (event.data.includes('meeting_ended') || 
-            event.data.includes('user_left') || 
-            event.data.includes('disconnected')) {
-          handleLeaveMeeting();
-        }
-      }
-    };
-
-    // Add event listener for iframe messages
-    window.addEventListener('message', handleMessage);
-    
-    // Also listen for focus events to detect when user comes back to the tab
-    const handleFocus = () => {
-      // Check if the iframe is still active
-      const iframe = document.querySelector('iframe[title="Zoom Meeting"]') as HTMLIFrameElement;
-      if (iframe && hasJoined) {
-        try {
-          // If we can't access the iframe content, it might mean the meeting ended
-          iframe.contentWindow?.postMessage('ping', '*');
-        } catch (error) {
-          // If there's an error, assume the meeting ended
-          handleLeaveMeeting();
-        }
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      window.removeEventListener('message', handleMessage);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [sessionId, hasJoined]);
+  useEffect(() => {
+    try {
+      ZoomMtg.setZoomJSLib("https://source.zoom.us/3.13.2/lib", "/av");
+      ZoomMtg.preLoadWasm();
+      ZoomMtg.prepareWebSDK();
+      ZoomMtg.i18n.load("en-US");
+      ZoomMtg.i18n.reload("en-US");
+      setIsSdkReady(true);
+      console.log("✅ Zoom Meeting SDK initialized");
+    } catch (err) {
+      console.error("❌ Failed to initialize Zoom Meeting SDK", err);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+      <div
+        id="zmmtg-root"
+        className={`w-full h-[70vh] rounded-lg bg-gray-100 ${hasJoined ? "" : "hidden"}`}
+        style={{ zIndex: 1000, position: "relative" }}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!hasJoined ? (
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Session Info */}
             <div className="lg:col-span-1 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Video className="w-5 h-5" />
-                    Session Details
+                    <Video className="w-5 h-5" /> Session Details
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -101,36 +114,27 @@ const SessionJoin = () => {
                     <h3 className="font-semibold text-gray-900">{sessionTitle}</h3>
                     <p className="text-sm text-gray-600">with {mentorName}</p>
                   </div>
-                  
                   <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Clock className="w-4 h-4" />
-                    <span>Started at {startTime}</span>
+                    <Clock className="w-4 h-4" /> <span>Started at {startTime}</span>
                   </div>
-                  
                   <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Users className="w-4 h-4" />
-                    <span>47 participants</span>
+                    <Users className="w-4 h-4" /> <span>47 participants</span>
                   </div>
-                  
                   <Badge className="bg-green-100 text-green-800">Live</Badge>
-                  
                   <div className="pt-4 border-t">
-                    <p className="text-xs text-gray-500 mb-2">Meeting ID: {zoomMeetingId}</p>
-                    <p className="text-xs text-gray-500 break-all">Password: {zoomPassword}</p>
+                    <p className="text-xs text-gray-500 mb-2">Meeting ID: {meetingNumber}</p>
+                    <p className="text-xs text-gray-500">Password: {passWord}</p>
                     <p className="text-xs text-gray-500">Joining as: {userName}</p>
                   </div>
-                  
-                  <Button 
+                  <Button
                     onClick={handleJoinSession}
-                    disabled={isJoining}
+                    disabled={isJoining || !isSdkReady}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
                     {isJoining ? "Joining..." : "Join Session"}
                   </Button>
                 </CardContent>
               </Card>
-              
-              {/* Session Guidelines */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Session Guidelines</CardTitle>
@@ -155,8 +159,6 @@ const SessionJoin = () => {
                 </CardContent>
               </Card>
             </div>
-            
-            {/* Zoom Meeting Embed */}
             <div className="lg:col-span-2">
               <Card className="h-full">
                 <CardHeader>
@@ -178,28 +180,14 @@ const SessionJoin = () => {
             </div>
           </div>
         ) : (
-          <div className="relative">
-            <div className="fixed top-4 right-4 z-50">
-              <Button 
-                onClick={handleLeaveMeeting}
-                variant="destructive"
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Leave Meeting
-              </Button>
-            </div>
-            <div className="h-screen -mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
-              <iframe
-                src={zoomWebUrl}
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                allow="camera *; microphone *; fullscreen *; speaker *; display-capture *; autoplay *; encrypted-media *; clipboard-write *"
-                className="w-full h-full"
-                title="Zoom Meeting"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-downloads allow-modals allow-top-navigation"
-              />
-            </div>
+          <div className="fixed top-4 right-4 z-50">
+            <Button
+              onClick={handleLeaveMeeting}
+              variant="destructive"
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Leave Meeting
+            </Button>
           </div>
         )}
       </div>
