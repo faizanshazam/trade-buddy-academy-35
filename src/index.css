@@ -45,6 +45,7 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  /* Dark Theme */
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -74,6 +75,90 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* Ocean Theme */
+  .ocean {
+    --background: 210 100% 97%;
+    --foreground: 210 100% 15%;
+    --card: 210 50% 98%;
+    --card-foreground: 210 100% 15%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 210 100% 98%;
+    --secondary: 210 50% 90%;
+    --secondary-foreground: 210 100% 15%;
+    --muted: 210 50% 95%;
+    --muted-foreground: 210 30% 40%;
+    --accent: 200 100% 50%;
+    --accent-foreground: 210 100% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 210 30% 85%;
+    --input: 210 30% 85%;
+    --ring: 210 100% 50%;
+  }
+
+  /* Forest Theme */
+  .forest {
+    --background: 120 20% 97%;
+    --foreground: 120 50% 15%;
+    --card: 120 30% 98%;
+    --card-foreground: 120 50% 15%;
+    --primary: 120 60% 40%;
+    --primary-foreground: 120 30% 98%;
+    --secondary: 120 20% 90%;
+    --secondary-foreground: 120 50% 15%;
+    --muted: 120 20% 95%;
+    --muted-foreground: 120 20% 40%;
+    --accent: 80 60% 50%;
+    --accent-foreground: 120 30% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 120 20% 85%;
+    --input: 120 20% 85%;
+    --ring: 120 60% 40%;
+  }
+
+  /* Sunset Theme */
+  .sunset {
+    --background: 30 100% 97%;
+    --foreground: 30 50% 15%;
+    --card: 30 50% 98%;
+    --card-foreground: 30 50% 15%;
+    --primary: 15 100% 60%;
+    --primary-foreground: 30 50% 98%;
+    --secondary: 30 30% 90%;
+    --secondary-foreground: 30 50% 15%;
+    --muted: 30 30% 95%;
+    --muted-foreground: 30 20% 40%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 30 50% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 30 20% 85%;
+    --input: 30 20% 85%;
+    --ring: 15 100% 60%;
+  }
+
+  /* Purple Theme */
+  .purple {
+    --background: 270 20% 97%;
+    --foreground: 270 50% 15%;
+    --card: 270 30% 98%;
+    --card-foreground: 270 50% 15%;
+    --primary: 270 80% 60%;
+    --primary-foreground: 270 30% 98%;
+    --secondary: 270 20% 90%;
+    --secondary-foreground: 270 50% 15%;
+    --muted: 270 20% 95%;
+    --muted-foreground: 270 20% 40%;
+    --accent: 300 80% 60%;
+    --accent-foreground: 270 30% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 270 20% 85%;
+    --input: 270 20% 85%;
+    --ring: 270 80% 60%;
+  }
 }
 
 @layer base {
@@ -83,13 +168,6 @@
 
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-  }
-
-  html {
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
   }
 
   /* Remove underlines from all links */
@@ -102,48 +180,49 @@
   }
 }
 
-/* Fix for Zoom Web SDK scaling and scrolling issues */
-body, html {
-  transform: none !important;
-  zoom: 1 !important;
-  font-size: 16px !important;
-  position: relative !important;
+/* Enhanced Zoom Web SDK scroll fix */
+body:not(.zoom-active) {
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  transform: none !important;
+  zoom: 1 !important;
+}
+
+html:not(.zoom-active) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  transform: none !important;
+  zoom: 1 !important;
+}
+
+body.zoom-active {
+  overflow: hidden !important;
+}
+
+html.zoom-active {
+  overflow: hidden !important;
 }
 
 #zmmtg-root {
-  zoom: 1 !important;
-  transform: none !important;
-  font-size: 1rem !important;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
   z-index: 9999 !important;
+  overflow: hidden !important;
 }
 
-#zmmtg-root * {
-  zoom: 1 !important;
-  transform: none !important;
-  font-size: 1rem !important;
-}
-
-/* Reset inline styles that Zoom might inject */
+/* Reset any Zoom-injected styles on body/html */
 body[style*="transform"], html[style*="transform"] {
   transform: none !important;
 }
+
 body[style*="zoom"], html[style*="zoom"] {
   zoom: 1 !important;
 }
-body[style*="overflow"], html[style*="overflow"] {
+
+body[style*="overflow"], html[style*="overflow"]:not(.zoom-active) {
   overflow-x: hidden !important;
   overflow-y: auto !important;
-}
-
-/* Ensure main content is scrollable when Zoom is hidden */
-.main-content {
-  overflow-y: auto !important;
-  height: 100vh !important;
 }
