@@ -10,6 +10,7 @@ import Signup from "./pages/Signup";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 import SessionJoin from "./pages/SessionJoin";
 import NotFound from "./pages/NotFound";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,6 +27,7 @@ function App() {
           <Route path="/trader/:id" element={<TraderProfile />} />
           <Route path="/course/:courseId" element={<CourseDetails />} />
           <Route path="/session/:sessionId" element={<SessionJoin />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />

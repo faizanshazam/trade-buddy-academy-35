@@ -1,19 +1,23 @@
 
+import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Clock, Users, Calendar, MessageSquare } from "lucide-react";
+import { Check, Clock, Users, Calendar, MessageSquare, CheckCircle, PlayCircle, Lock } from "lucide-react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import CourseChat from "@/components/CourseChat";
 
 const CourseDetails = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { toast } = useToast();
   const showChat = searchParams.get('chat') === 'true';
+  const [selectedSlot, setSelectedSlot] = useState<string>("");
 
-  // Mock course data
+  // Mock course data with progress tracking
   const course = {
     id: 1,
     title: "Complete Options Trading Mastery",
@@ -41,36 +45,102 @@ const CourseDetails = () => {
       "Certificate of completion"
     ],
     schedule: [
-      { day: "Week 1", topic: "Options Fundamentals" },
-      { day: "Week 2", topic: "Basic Strategies" },
-      { day: "Week 3", topic: "Advanced Strategies" },
-      { day: "Week 4", topic: "Risk Management" }
+      { 
+        week: "Week 1", 
+        topic: "Options Fundamentals", 
+        status: "completed",
+        classes: ["Introduction to Options", "Call & Put Options", "Options Pricing"]
+      },
+      { 
+        week: "Week 2", 
+        topic: "Basic Strategies", 
+        status: "completed",
+        classes: ["Covered Calls", "Protective Puts", "Long Straddles"]
+      },
+      { 
+        week: "Week 3", 
+        topic: "Advanced Strategies", 
+        status: "current",
+        classes: ["Iron Condors", "Butterfly Spreads", "Calendar Spreads"]
+      },
+      { 
+        week: "Week 4", 
+        topic: "Risk Management", 
+        status: "upcoming",
+        classes: ["Position Sizing", "Portfolio Hedging", "Exit Strategies"]
+      }
     ]
   };
 
   const availableSlots = [
-    "Today 6:00 PM",
-    "Tomorrow 6:00 PM", 
-    "Dec 15, 6:00 PM",
-    "Dec 16, 6:00 PM",
-    "Dec 17, 6:00 PM"
+    { id: "1", time: "Today 6:00 PM", available: true },
+    { id: "2", time: "Tomorrow 6:00 PM", available: true },
+    { id: "3", time: "Dec 15, 6:00 PM", available: false },
+    { id: "4", time: "Dec 16, 6:00 PM", available: true },
+    { id: "5", time: "Dec 17, 6:00 PM", available: true }
   ];
 
   const handleEnrollNow = () => {
-    navigate(`/checkout?courseId=${courseId}&traderId=${course.instructorId}`);
+    if (!selectedSlot) {
+      toast({
+        title: "Select Time Slot",
+        description: "Please select a time slot before enrolling",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simulate enrollment process
+    const success = Math.random() > 0.2; // 80% success rate for demo
+    
+    if (success) {
+      toast({
+        title: "Enrollment Successful! 🎉",
+        description: `You're enrolled for ${selectedSlot}. Payment link sent to your email.`,
+      });
+      // Navigate to payment page
+      navigate(`/payment?courseId=${courseId}&courseName=${encodeURIComponent(course.title)}&amount=${encodeURIComponent(course.price)}&instructor=${encodeURIComponent(course.instructor)}`);
+    } else {
+      toast({
+        title: "Enrollment Failed",
+        description: "Unable to process enrollment. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleContactInstructor = () => {
     navigate(`/trader/${course.instructorId}`);
   };
 
-  const handleSlotSelect = (slot: string) => {
-    console.log("Selected slot:", slot);
-    // Handle slot selection
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case "current":
+        return <PlayCircle className="w-5 h-5 text-blue-500" />;
+      case "upcoming":
+        return <Lock className="w-5 h-5 text-gray-400" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-50 border-green-200";
+      case "current":
+        return "bg-blue-50 border-blue-200";
+      case "upcoming":
+        return "bg-gray-50 border-gray-200";
+      default:
+        return "bg-gray-50 border-gray-200";
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 main-content">
       <Navigation />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -115,22 +185,51 @@ const CourseDetails = () => {
               </CardContent>
             </Card>
 
-            {/* Course Schedule */}
+            {/* Course Progress & Schedule */}
             <Card>
               <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6">Course Schedule</h2>
+                <h2 className="text-2xl font-bold mb-6">Course Progress & Schedule</h2>
                 <div className="space-y-4">
                   {course.schedule.map((week, index) => (
-                    <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                      <div className="w-20 text-sm font-medium text-gray-600">{week.day}</div>
-                      <div className="flex-1 text-gray-900">{week.topic}</div>
+                    <div key={index} className={`p-6 rounded-lg border-2 ${getStatusColor(week.status)}`}>
+                      <div className="flex items-center gap-4 mb-4">
+                        {getStatusIcon(week.status)}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-lg font-semibold text-gray-900">{week.week}</h3>
+                            <Badge variant={week.status === "current" ? "default" : "secondary"}>
+                              {week.status === "completed" ? "Completed" : 
+                               week.status === "current" ? "In Progress" : "Upcoming"}
+                            </Badge>
+                          </div>
+                          <p className="text-gray-700 font-medium">{week.topic}</p>
+                        </div>
+                      </div>
+                      <div className="ml-9">
+                        <p className="text-sm text-gray-600 mb-2">Classes:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {week.classes.map((className, classIndex) => (
+                            <Badge 
+                              key={classIndex} 
+                              variant="outline" 
+                              className={`text-xs ${
+                                week.status === "completed" ? "bg-green-100 text-green-700" :
+                                week.status === "current" ? "bg-blue-100 text-blue-700" :
+                                "bg-gray-100 text-gray-600"
+                              }`}
+                            >
+                              {className}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Chat Section - Show if chat parameter is true */}
+            {/* Chat Section */}
             {showChat && (
               <CourseChat 
                 mentorName={course.instructor}
@@ -178,17 +277,32 @@ const CourseDetails = () => {
             {/* Available Slots */}
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Available Time Slots</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">Select Time Slot</h3>
                 <div className="space-y-2">
-                  {availableSlots.map((slot, index) => (
+                  {availableSlots.map((slot) => (
                     <button
-                      key={index}
-                      className="w-full p-3 text-left border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
-                      onClick={() => handleSlotSelect(slot)}
+                      key={slot.id}
+                      disabled={!slot.available}
+                      className={`w-full p-3 text-left border rounded-lg transition-colors ${
+                        !slot.available 
+                          ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                          : selectedSlot === slot.time
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                      }`}
+                      onClick={() => slot.available && setSelectedSlot(slot.time)}
                     >
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">{slot}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span className="text-sm">{slot.time}</span>
+                        </div>
+                        {selectedSlot === slot.time && (
+                          <CheckCircle className="w-4 h-4 text-blue-600" />
+                        )}
+                        {!slot.available && (
+                          <Badge variant="secondary" className="text-xs">Full</Badge>
+                        )}
                       </div>
                     </button>
                   ))}
