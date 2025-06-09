@@ -4,6 +4,7 @@ import Index from "./pages/Index";
 import Explore from "./pages/Explore";
 import Courses from "./pages/Courses";
 import TraderProfile from "./pages/TraderProfile";
+import TraderCourses from "./pages/TraderCourses";
 import CourseDetails from "./pages/CourseDetails";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -26,6 +27,7 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/trader/:id" element={<TraderProfile />} />
+          <Route path="/trader/:id/courses" element={<TraderCourses />} />
           <Route path="/course/:courseId" element={<CourseDetails />} />
           <Route path="/session/:sessionId" element={<SessionJoin />} />
           <Route path="/payment" element={<Payment />} />
