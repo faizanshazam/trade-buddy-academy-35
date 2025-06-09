@@ -14,6 +14,7 @@ export const Navigation = () => {
     { name: "Courses", path: "/courses" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
+    { name: "Support", path: "/chat-support" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -27,7 +28,7 @@ export const Navigation = () => {
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              TradeMentor
+              StockSensei
             </span>
           </Link>
 

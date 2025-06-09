@@ -3,7 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, Users, Clock, MessageSquare } from "lucide-react";
+import { Check, Star, Users, Clock, MessageSquare, ExternalLink } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const TraderProfile = () => {
@@ -23,7 +23,8 @@ const TraderProfile = () => {
     experience: "8+ years",
     studentsCount: 150,
     bio: "Expert in options trading with 8+ years of experience in Indian markets. Specialized in systematic trading strategies and risk management.",
-    availability: "Monday to Friday, 6 PM - 9 PM"
+    availability: "Monday to Friday, 6 PM - 9 PM",
+    externalProfile: `https://stocksensei.in/trader${id}`
   };
 
   const courses = [
@@ -82,6 +83,10 @@ const TraderProfile = () => {
     navigate(`/contact?subject=Contact%20${trader.name}`);
   };
 
+  const handleExternalProfile = () => {
+    window.open(trader.externalProfile, '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -118,19 +123,26 @@ const TraderProfile = () => {
                   <span>{trader.experience}</span>
                 </div>
                 <p className="text-gray-600 mb-4">{trader.bio}</p>
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm text-gray-600 mb-4">
                   <p><strong>Qualification:</strong> {trader.qualification}</p>
                   <p><strong>Languages:</strong> {trader.languages.join(", ")}</p>
                   <p><strong>Availability:</strong> {trader.availability}</p>
                 </div>
-                <div className="mt-4">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     variant="outline" 
                     onClick={handleContactInstructor}
-                    className="mr-4"
+                    className="flex items-center gap-2"
                   >
-                    <MessageSquare className="w-4 h-4 mr-2" />
+                    <MessageSquare className="w-4 h-4" />
                     Contact Instructor
+                  </Button>
+                  <Button 
+                    onClick={handleExternalProfile}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View External Profile
                   </Button>
                 </div>
               </div>

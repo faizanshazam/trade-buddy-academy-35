@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import SessionJoin from "./pages/SessionJoin";
+import ChatSupport from "./pages/ChatSupport";
 import NotFound from "./pages/NotFound";
 import { Toaster } from "@/components/ui/sonner";
 import "./App.css";
@@ -33,6 +34,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/chat-support" element={<ChatSupport />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
