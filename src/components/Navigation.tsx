@@ -11,14 +11,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { AlignJustify } from "lucide-react";
-import { ThemeSelector } from "@/components/ThemeSelector";
+import { AlignJustify, Moon, Sun } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -85,7 +90,9 @@ const Navigation = () => {
 
         {/* Right Side Buttons */}
         <div className="flex items-center gap-4">
-          <ThemeSelector />
+          <Button variant="ghost" size="sm" onClick={toggleTheme}>
+            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </Button>
           <Link to="/login">
             <Button variant="outline" size="sm">
               Log In
