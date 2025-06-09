@@ -1,5 +1,5 @@
 
-import { Navigation } from "@/components/Navigation";
+import Navigation from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { NavigationCards } from "@/components/NavigationCards";
 

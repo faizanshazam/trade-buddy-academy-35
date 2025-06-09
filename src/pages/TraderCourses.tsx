@@ -1,13 +1,15 @@
-import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Users, Star, Clock, BookOpen } from "lucide-react";
+import { Check, Users, Star, Clock, BookOpen, ArrowLeft } from "lucide-react";
 
 const TraderCourses = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Mock trader data
   const trader = {

@@ -1,5 +1,5 @@
 
-import { Navigation } from "@/components/Navigation";
+import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Award, TrendingUp, Shield } from "lucide-react";
