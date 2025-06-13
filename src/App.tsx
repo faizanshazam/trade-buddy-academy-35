@@ -40,9 +40,6 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/chat-support" element={<ChatSupport />} />
-          <Route path="/learn-how-it-works" element={<LearnHowItWorks />} />
-          <Route path="/mentor-dashboard" element={<MentorDashboard />} />
-          <Route path="/student-dashboard" element={<StudentDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

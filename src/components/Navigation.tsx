@@ -1,21 +1,12 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/ModeToggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { AlignJustify } from "lucide-react";
-import { ThemeSelector } from "@/components/ThemeSelector";
+import { Menu, X, TrendingUp } from "lucide-react";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -25,6 +16,8 @@ export const Navigation = () => {
     { name: "Contact", path: "/contact" },
     { name: "Support", path: "/chat-support" },
   ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="bg-white shadow-md border-b sticky top-0 z-50">
@@ -114,37 +107,8 @@ export const Navigation = () => {
                 </Link>
               </div>
             </div>
-          </SheetContent>
-        </Sheet>
-
-        {/* Desktop Menu */}
-        <div className="hidden lg:flex items-center gap-6">
-          <Link to="/explore" className="hover:text-primary">
-            Explore
-          </Link>
-          <Link to="/courses" className="hover:text-primary">
-            Courses
-          </Link>
-          <Link to="/about" className="hover:text-primary">
-            About
-          </Link>
-          <Link to="/contact" className="hover:text-primary">
-            Contact
-          </Link>
-        </div>
-
-        {/* Right Side Buttons */}
-        <div className="flex items-center gap-4">
-          <ThemeSelector />
-          <Link to="/login">
-            <Button variant="outline" size="sm">
-              Log In
-            </Button>
-          </Link>
-          <Link to="/signup">
-            <Button size="sm">Sign Up</Button>
-          </Link>
-        </div>
+          </div>
+        )}
       </div>
     </nav>
   );
