@@ -1,4 +1,3 @@
-
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -83,6 +82,7 @@ const TraderProfile = () => {
     const file = event.target.files?.[0];
     if (file) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       console.log('Background file selected:', file.name);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -97,6 +97,17 @@ const TraderProfile = () => {
       reader.onload = (e) => {
         setBackgroundImage(e.target?.result as string);
 >>>>>>> 3965d7d (feat: Add trader profile enhancements)
+=======
+      console.log('Background file selected:', file.name);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        console.log('Background file loaded successfully');
+        setBackgroundImage(result);
+      };
+      reader.onerror = (error) => {
+        console.error('Error reading background file:', error);
+>>>>>>> 48f7158 (Fix: Image upload functionality)
       };
       reader.readAsDataURL(file);
     }
@@ -105,39 +116,27 @@ const TraderProfile = () => {
   const handleChartUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      console.log('Files selected:', files.length);
+      console.log('Chart files selected:', files.length);
       
-      const filePromises = Array.from(files).map(file => {
-        return new Promise<string>((resolve, reject) => {
-          console.log('Processing file:', file.name, file.type);
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const result = e.target?.result as string;
-            console.log('File loaded successfully');
-            resolve(result);
-          };
-          reader.onerror = (error) => {
-            console.error('Error reading file:', error);
-            reject(error);
-          };
-          reader.readAsDataURL(file);
-        });
-      });
-
-      Promise.all(filePromises)
-        .then(results => {
-          console.log('All files processed, adding to charts');
+      Array.from(files).forEach((file, index) => {
+        console.log(`Processing chart file ${index + 1}:`, file.name, file.type);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          console.log(`Chart file ${index + 1} loaded successfully`);
           setTradingCharts(prev => {
-            const updated = [...prev, ...results];
+            const updated = [...prev, result];
             console.log('Updated charts array length:', updated.length);
             return updated;
           });
-        })
-        .catch(error => {
-          console.error('Error processing files:', error);
-        });
+        };
+        reader.onerror = (error) => {
+          console.error(`Error reading chart file ${index + 1}:`, error);
+        };
+        reader.readAsDataURL(file);
+      });
 
-      // Reset the input value so the same file can be selected again if needed
+      // Reset the input value
       event.target.value = '';
     }
   };
@@ -183,14 +182,14 @@ const TraderProfile = () => {
                   <Upload className="w-4 h-4 mr-2" />
                   Change Background
                 </Button>
-                <input
-                  id="background-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBackgroundUpload}
-                  className="hidden"
-                />
               </label>
+              <input
+                id="background-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleBackgroundUpload}
+                className="hidden"
+              />
             </div>
 
             <CardContent className="p-0">
@@ -264,15 +263,15 @@ const TraderProfile = () => {
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Upload Charts
                 </Button>
-                <input
-                  id="chart-upload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleChartUpload}
-                  className="hidden"
-                />
               </label>
+              <input
+                id="chart-upload"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleChartUpload}
+                className="hidden"
+              />
             </div>
 
             {tradingCharts.length > 0 ? (
@@ -314,15 +313,15 @@ const TraderProfile = () => {
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Your First Chart
                   </Button>
-                  <input
-                    id="chart-upload-center"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleChartUpload}
-                    className="hidden"
-                  />
                 </label>
+                <input
+                  id="chart-upload-center"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleChartUpload}
+                  className="hidden"
+                />
               </div>
             )}
           </CardContent>
