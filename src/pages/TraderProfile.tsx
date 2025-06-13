@@ -1,3 +1,4 @@
+
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -104,13 +105,26 @@ const TraderProfile = () => {
   const handleChartUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
+      console.log('Files selected:', files.length);
       Array.from(files).forEach(file => {
+        console.log('Processing file:', file.name, file.type);
         const reader = new FileReader();
         reader.onload = (e) => {
-          setTradingCharts(prev => [...prev, e.target?.result as string]);
+          const result = e.target?.result as string;
+          console.log('File loaded, adding to charts');
+          setTradingCharts(prev => {
+            const updated = [...prev, result];
+            console.log('Updated charts array length:', updated.length);
+            return updated;
+          });
+        };
+        reader.onerror = (error) => {
+          console.error('Error reading file:', error);
         };
         reader.readAsDataURL(file);
       });
+      // Reset the input value so the same file can be selected again if needed
+      event.target.value = '';
     }
   };
 
