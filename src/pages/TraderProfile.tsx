@@ -104,25 +104,39 @@ const TraderProfile = () => {
 
   const handleChartUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
+    if (files && files.length > 0) {
       console.log('Files selected:', files.length);
-      Array.from(files).forEach(file => {
-        console.log('Processing file:', file.name, file.type);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          console.log('File loaded, adding to charts');
+      
+      const filePromises = Array.from(files).map(file => {
+        return new Promise<string>((resolve, reject) => {
+          console.log('Processing file:', file.name, file.type);
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const result = e.target?.result as string;
+            console.log('File loaded successfully');
+            resolve(result);
+          };
+          reader.onerror = (error) => {
+            console.error('Error reading file:', error);
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(filePromises)
+        .then(results => {
+          console.log('All files processed, adding to charts');
           setTradingCharts(prev => {
-            const updated = [...prev, result];
+            const updated = [...prev, ...results];
             console.log('Updated charts array length:', updated.length);
             return updated;
           });
-        };
-        reader.onerror = (error) => {
-          console.error('Error reading file:', error);
-        };
-        reader.readAsDataURL(file);
-      });
+        })
+        .catch(error => {
+          console.error('Error processing files:', error);
+        });
+
       // Reset the input value so the same file can be selected again if needed
       event.target.value = '';
     }

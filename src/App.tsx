@@ -15,8 +15,6 @@ import Payment from "./pages/Payment";
 import SessionJoin from "./pages/SessionJoin";
 import ChatSupport from "./pages/ChatSupport";
 import LearnHowItWorks from "./pages/LearnHowItWorks";
-import MentorDashboard from "./pages/MentorDashboard";
-import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 import { Toaster } from "@/components/ui/sonner";
 import "./App.css";
@@ -40,6 +38,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/chat-support" element={<ChatSupport />} />
+          <Route path="/learn-how-it-works" element={<LearnHowItWorks />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
