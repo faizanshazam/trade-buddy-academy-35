@@ -2,7 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, Users, Clock, MessageSquare, ExternalLink, Upload, TrendingUp, BarChart3 } from "lucide-react";
+import { Check, Star, Users, Clock, MessageSquare, ExternalLink, Upload, TrendingUp, BarChart3, X } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -11,6 +11,7 @@ const TraderProfile = () => {
   const navigate = useNavigate();
   const [backgroundImage, setBackgroundImage] = useState<string>("");
   const [tradingCharts, setTradingCharts] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Mock trader data
   const trader = {
@@ -111,6 +112,14 @@ const TraderProfile = () => {
         reader.readAsDataURL(file);
       });
     }
+  };
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImage(null);
   };
 
   const handleBookNow = (courseId: number) => {
@@ -214,7 +223,7 @@ const TraderProfile = () => {
           </div>
         </Card>
 
-        {/* Trading Performance Charts Section */}
+        {/* Trading Performance Charts Section - Image Grid */}
         <Card className="mb-8">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -239,16 +248,30 @@ const TraderProfile = () => {
             </div>
 
             {tradingCharts.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {tradingCharts.map((chart, index) => (
-                  <div key={index} className="bg-white rounded-lg border shadow-sm overflow-hidden">
-                    <img
-                      src={chart}
-                      alt={`Trading Chart ${index + 1}`}
-                      className="w-full h-48 object-cover"
-                    />
+                  <div 
+                    key={index} 
+                    className="relative bg-white rounded-lg border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow group"
+                    onClick={() => handleImageClick(chart)}
+                  >
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={chart}
+                        alt={`Trading Chart ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-white rounded-full p-2 shadow-lg">
+                          <BarChart3 className="w-5 h-5 text-blue-600" />
+                        </div>
+                      </div>
+                    </div>
                     <div className="p-3">
-                      <p className="text-sm text-gray-600">Chart {index + 1}</p>
+                      <p className="text-sm font-medium text-gray-700">Chart {index + 1}</p>
+                      <p className="text-xs text-gray-500">Click to view full size</p>
                     </div>
                   </div>
                 ))}
