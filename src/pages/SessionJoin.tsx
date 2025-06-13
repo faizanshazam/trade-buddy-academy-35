@@ -10,6 +10,8 @@ import { ZoomMtg } from "@zoom/meetingsdk";
 import "@zoom/meetingsdk/dist/css/bootstrap.css";
 import "@zoom/meetingsdk/dist/css/react-select.css";
 
+import { SessionChat } from "@/components/SessionChat";
+
 const SessionJoin = () => {
   const { sessionId } = useParams();
   const [searchParams] = useSearchParams();
@@ -28,6 +30,10 @@ const SessionJoin = () => {
   const sdkKey = "13uzy1wwRfCajEKdERsfHQ";
 
   const joinMeeting = (signature: string) => {
+    // Add zoom-active class to prevent scroll issues
+    document.body.classList.add('zoom-active');
+    document.documentElement.classList.add('zoom-active');
+    
     const zoomRoot = document.getElementById("zmmtg-root");
     if (zoomRoot) zoomRoot.style.display = "block";
 
@@ -46,12 +52,18 @@ const SessionJoin = () => {
           error: (err: any) => {
             console.error("❌ Join error", err);
             alert("Join failed. Check credentials or signature.");
+            // Remove zoom classes on error
+            document.body.classList.remove('zoom-active');
+            document.documentElement.classList.remove('zoom-active');
           },
         });
       },
       error: (err: any) => {
         console.error("❌ Init error", err);
         alert("Zoom SDK init failed.");
+        // Remove zoom classes on error
+        document.body.classList.remove('zoom-active');
+        document.documentElement.classList.remove('zoom-active');
       },
     });
   };
@@ -70,6 +82,9 @@ const SessionJoin = () => {
   };
 
   const handleLeaveMeeting = () => {
+    // Remove zoom-active classes to restore scroll
+    document.body.classList.remove('zoom-active');
+    document.documentElement.classList.remove('zoom-active');
     window.location.reload();
   };
 
@@ -191,6 +206,9 @@ const SessionJoin = () => {
           </div>
         )}
       </div>
+      
+      {/* Session Chat - only show when not in Zoom meeting */}
+      {!hasJoined && <SessionChat />}
     </div>
   );
 };
