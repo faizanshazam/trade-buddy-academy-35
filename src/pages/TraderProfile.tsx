@@ -1,22 +1,16 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> e4ede14 (Reverted to commit d94befe4148e9b3d2cd8a8250122b529a2fb5d1d)
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, Users, Clock, MessageSquare, ExternalLink, Upload, TrendingUp, BarChart3, X } from "lucide-react";
+import { Check, Star, Users, Clock, MessageSquare, ExternalLink, Upload, TrendingUp, BarChart3 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { RequestCallDialog } from "@/components/RequestCallDialog";
 
 const TraderProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [backgroundImage, setBackgroundImage] = useState<string>("");
   const [tradingCharts, setTradingCharts] = useState<string[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Mock trader data
   const trader = {
@@ -86,6 +80,7 @@ const TraderProfile = () => {
   const handleBackgroundUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+<<<<<<< HEAD
       console.log('Background file selected:', file.name);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -95,6 +90,11 @@ const TraderProfile = () => {
       };
       reader.onerror = (error) => {
         console.error('Error reading background file:', error);
+=======
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setBackgroundImage(e.target?.result as string);
+>>>>>>> 3965d7d (feat: Add trader profile enhancements)
       };
       reader.readAsDataURL(file);
     }
@@ -102,38 +102,15 @@ const TraderProfile = () => {
 
   const handleChartUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files && files.length > 0) {
-      console.log('Chart files selected:', files.length);
-      
-      Array.from(files).forEach((file, index) => {
-        console.log(`Processing chart file ${index + 1}:`, file.name, file.type);
+    if (files) {
+      Array.from(files).forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const result = e.target?.result as string;
-          console.log(`Chart file ${index + 1} loaded successfully`);
-          setTradingCharts(prev => {
-            const updated = [...prev, result];
-            console.log('Updated charts array length:', updated.length);
-            return updated;
-          });
-        };
-        reader.onerror = (error) => {
-          console.error(`Error reading chart file ${index + 1}:`, error);
+          setTradingCharts(prev => [...prev, e.target?.result as string]);
         };
         reader.readAsDataURL(file);
       });
-
-      // Reset the input value
-      event.target.value = '';
     }
-  };
-
-  const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedImage(null);
   };
 
   const handleBookNow = (courseId: number) => {
@@ -169,14 +146,14 @@ const TraderProfile = () => {
                   <Upload className="w-4 h-4 mr-2" />
                   Change Background
                 </Button>
+                <input
+                  id="background-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBackgroundUpload}
+                  className="hidden"
+                />
               </label>
-              <input
-                id="background-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleBackgroundUpload}
-                className="hidden"
-              />
             </div>
 
             <CardContent className="p-0">
@@ -230,11 +207,6 @@ const TraderProfile = () => {
                       <ExternalLink className="w-4 h-4" />
                       View External Profile
                     </Button>
-                    <RequestCallDialog
-                      traderName={trader.name}
-                      triggerClassName="bg-pink-100 text-pink-700 hover:bg-pink-200 font-semibold"
-                      callCharge="₹499 per 30min"
-                    />
                   </div>
                 </div>
               </div>
@@ -242,7 +214,7 @@ const TraderProfile = () => {
           </div>
         </Card>
 
-        {/* Trading Performance Charts Section - Image Grid */}
+        {/* Trading Performance Charts Section */}
         <Card className="mb-8">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -255,42 +227,28 @@ const TraderProfile = () => {
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Upload Charts
                 </Button>
+                <input
+                  id="chart-upload"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleChartUpload}
+                  className="hidden"
+                />
               </label>
-              <input
-                id="chart-upload"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleChartUpload}
-                className="hidden"
-              />
             </div>
 
             {tradingCharts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {tradingCharts.map((chart, index) => (
-                  <div 
-                    key={index} 
-                    className="relative bg-white rounded-lg border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow group"
-                    onClick={() => handleImageClick(chart)}
-                  >
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        src={chart}
-                        alt={`Trading Chart ${index + 1}`}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="bg-white rounded-full p-2 shadow-lg">
-                          <BarChart3 className="w-5 h-5 text-blue-600" />
-                        </div>
-                      </div>
-                    </div>
+                  <div key={index} className="bg-white rounded-lg border shadow-sm overflow-hidden">
+                    <img
+                      src={chart}
+                      alt={`Trading Chart ${index + 1}`}
+                      className="w-full h-48 object-cover"
+                    />
                     <div className="p-3">
-                      <p className="text-sm font-medium text-gray-700">Chart {index + 1}</p>
-                      <p className="text-xs text-gray-500">Click to view full size</p>
+                      <p className="text-sm text-gray-600">Chart {index + 1}</p>
                     </div>
                   </div>
                 ))}
@@ -305,15 +263,15 @@ const TraderProfile = () => {
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Your First Chart
                   </Button>
+                  <input
+                    id="chart-upload-center"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleChartUpload}
+                    className="hidden"
+                  />
                 </label>
-                <input
-                  id="chart-upload-center"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleChartUpload}
-                  className="hidden"
-                />
               </div>
             )}
           </CardContent>
