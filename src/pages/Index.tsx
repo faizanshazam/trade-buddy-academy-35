@@ -1,7 +1,7 @@
-
-import Navigation from "@/components/Navigation";
+import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { NavigationCards } from "@/components/NavigationCards";
+import TraderFeedbackCarousel from "@/components/TraderFeedbackCarousel";
 
 const Index = () => {
   return (
@@ -9,6 +9,7 @@ const Index = () => {
       <Navigation />
       <Hero />
       <NavigationCards />
+      <TraderFeedbackCarousel />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import Navigation from "@/components/Navigation";
+import { Navigation } from "@/components/Navigation";
 import { FilterTabs } from "@/components/FilterTabs";
 import { TraderCard } from "@/components/TraderCard";
 

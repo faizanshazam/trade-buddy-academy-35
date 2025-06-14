@@ -1,11 +1,19 @@
-import React from "react";
-import Navigation from "@/components/Navigation";
+
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, DollarSign, Users, MessageSquare, Clock, TrendingUp } from "lucide-react";
+import { Calendar, DollarSign, Users, MessageSquare, Clock, TrendingUp, MessageCircle } from "lucide-react";
+import { StudentProgressModal } from "@/components/StudentProgressModal";
+import { BatchChatModal } from "@/components/BatchChatModal";
+import { useState } from "react";
 
 const MentorDashboard = () => {
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [selectedBatch, setSelectedBatch] = useState<any>(null);
+  const [isBatchChatOpen, setIsBatchChatOpen] = useState(false);
+
   const upcomingSessions = [
     {
       id: 1,
@@ -60,6 +68,43 @@ const MentorDashboard = () => {
     thisMonthEarnings: "₹45,000",
     completedSessions: 23,
     averageRating: 4.9
+  };
+
+  const activeBatches = [
+    {
+      id: 1,
+      name: "Options Trading Mastery - Batch A",
+      students: 25,
+      lastMessage: "Welcome to the batch! Let's start learning.",
+      lastMessageTime: "2 hours ago",
+      unreadCount: 3
+    },
+    {
+      id: 2,
+      name: "Technical Analysis - Batch B", 
+      students: 18,
+      lastMessage: "Priya: When is the next session?",
+      lastMessageTime: "1 day ago",
+      unreadCount: 0
+    },
+    {
+      id: 3,
+      name: "Risk Management - Batch C",
+      students: 22,
+      lastMessage: "Rajesh: Great explanation on portfolio diversification!",
+      lastMessageTime: "3 hours ago",
+      unreadCount: 5
+    }
+  ];
+
+  const handleViewProgress = (student: any) => {
+    setSelectedStudent(student);
+    setIsProgressModalOpen(true);
+  };
+
+  const handleOpenBatchChat = (batch: any) => {
+    setSelectedBatch(batch);
+    setIsBatchChatOpen(true);
   };
 
   return (
@@ -125,6 +170,54 @@ const MentorDashboard = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
+
+            {/* Batch Communications */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5" />
+                  Batch Communications
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {activeBatches.map((batch) => (
+                    <div key={batch.id} className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-gray-900">{batch.name}</h3>
+                            {batch.unreadCount > 0 && (
+                              <Badge className="bg-red-500 text-white text-xs">
+                                {batch.unreadCount}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">{batch.students} students enrolled</p>
+                          <p className="text-sm text-gray-500 truncate">{batch.lastMessage}</p>
+                        </div>
+                        <span className="text-xs text-gray-400">{batch.lastMessageTime}</span>
+                      </div>
+                      
+                      <div className="flex gap-2 mt-3">
+                        <Button 
+                          size="sm" 
+                          className="bg-blue-600 hover:bg-blue-700"
+                          onClick={() => handleOpenBatchChat(batch)}
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Open Chat
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          View Members
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Upcoming Sessions */}
             <Card>
               <CardHeader>
@@ -201,7 +294,7 @@ const MentorDashboard = () => {
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Message
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => handleViewProgress(student)}>
                           View Progress
                         </Button>
                       </div>
@@ -262,6 +355,19 @@ const MentorDashboard = () => {
           </div>
         </div>
       </div>
+
+      <StudentProgressModal
+        student={selectedStudent}
+        isOpen={isProgressModalOpen}
+        onClose={() => setIsProgressModalOpen(false)}
+      />
+
+      <BatchChatModal
+        isOpen={isBatchChatOpen}
+        onClose={() => setIsBatchChatOpen(false)}
+        batchName={selectedBatch?.name || ""}
+        studentCount={selectedBatch?.students || 0}
+      />
     </div>
   );
 };

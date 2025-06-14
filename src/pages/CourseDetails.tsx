@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Navigation from "@/components/Navigation";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

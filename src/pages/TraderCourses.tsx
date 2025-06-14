@@ -1,15 +1,14 @@
-import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import Navigation from "@/components/Navigation";
+
+import { useParams, Link } from "react-router-dom";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Users, Star, Clock, BookOpen, ArrowLeft } from "lucide-react";
+import { Check, Users, Star, Clock, BookOpen } from "lucide-react";
 
 const TraderCourses = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   // Mock trader data
   const trader = {
@@ -169,57 +168,53 @@ const TraderCourses = () => {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activeCourses.map((course) => (
-              <Link key={course.id} to={`/course/${course.id}`} className="block">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-600 rounded-t-lg flex items-center justify-center">
-                    <BookOpen className="w-12 h-12 text-white" />
+              <Card key={course.id} className="hover:shadow-lg transition-shadow">
+                <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-600 rounded-t-lg flex items-center justify-center">
+                  <BookOpen className="w-12 h-12 text-white" />
+                </div>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <Badge className={`text-xs ${
+                      course.level === 'Beginner' ? 'bg-green-100 text-green-800' :
+                      course.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {course.level}
+                    </Badge>
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span>{course.rating}</span>
+                    </div>
                   </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <Badge className={`text-xs ${
-                        course.level === 'Beginner' ? 'bg-green-100 text-green-800' :
-                        course.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {course.level}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                        <span>{course.rating}</span>
-                      </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
+                  
+                  <div className="space-y-2 mb-4 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Duration:</span>
+                      <span className="font-medium">{course.duration}</span>
                     </div>
-                    
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
-                    
-                    <div className="space-y-2 mb-4 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Duration:</span>
-                        <span className="font-medium">{course.duration}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Students:</span>
-                        <span className="font-medium">{course.enrolledStudents}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Next Batch:</span>
-                        <span className="font-medium">{course.nextBatch}</span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span>Students:</span>
+                      <span className="font-medium">{course.enrolledStudents}</span>
                     </div>
-                    
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-2xl font-bold text-gray-900">₹{course.price}</div>
-                      <Button 
-                        size="sm" 
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={(e) => e.preventDefault()}
-                      >
+                    <div className="flex justify-between">
+                      <span>Next Batch:</span>
+                      <span className="font-medium">{course.nextBatch}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="text-2xl font-bold text-gray-900">₹{course.price}</div>
+                    <Link to={`/course/${course.id}`}>
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                         View Details
                       </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -236,44 +231,42 @@ const TraderCourses = () => {
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingCourses.map((course) => (
-                <Link key={course.id} to={`/course/${course.id}`} className="block">
-                  <Card className="opacity-75 hover:opacity-100 transition-opacity cursor-pointer">
-                    <div className="aspect-video bg-gradient-to-br from-gray-400 to-gray-500 rounded-t-lg flex items-center justify-center">
-                      <Clock className="w-12 h-12 text-white" />
+                <Card key={course.id} className="opacity-75 hover:opacity-100 transition-opacity">
+                  <div className="aspect-video bg-gradient-to-br from-gray-400 to-gray-500 rounded-t-lg flex items-center justify-center">
+                    <Clock className="w-12 h-12 text-white" />
+                  </div>
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <Badge variant="outline" className="border-orange-300 text-orange-700 text-xs">
+                        {course.level}
+                      </Badge>
+                      <Badge variant="outline" className="border-orange-300 text-orange-700 text-xs">
+                        Coming Soon
+                      </Badge>
                     </div>
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <Badge variant="outline" className="border-orange-300 text-orange-700 text-xs">
-                          {course.level}
-                        </Badge>
-                        <Badge variant="outline" className="border-orange-300 text-orange-700 text-xs">
-                          Coming Soon
-                        </Badge>
+                    
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
+                    
+                    <div className="space-y-2 mb-4 text-sm text-gray-600">
+                      <div className="flex justify-between">
+                        <span>Duration:</span>
+                        <span className="font-medium">{course.duration}</span>
                       </div>
-                      
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
-                      
-                      <div className="space-y-2 mb-4 text-sm text-gray-600">
-                        <div className="flex justify-between">
-                          <span>Duration:</span>
-                          <span className="font-medium">{course.duration}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Launch Date:</span>
-                          <span className="font-medium">{course.nextBatch}</span>
-                        </div>
+                      <div className="flex justify-between">
+                        <span>Launch Date:</span>
+                        <span className="font-medium">{course.nextBatch}</span>
                       </div>
-                      
-                      <div className="flex items-center justify-between pt-4 border-t">
-                        <div className="text-2xl font-bold text-gray-900">₹{course.price}</div>
-                        <Button size="sm" variant="outline" disabled>
-                          Notify Me
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-4 border-t">
+                      <div className="text-2xl font-bold text-gray-900">₹{course.price}</div>
+                      <Button size="sm" variant="outline" disabled>
+                        Notify Me
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
