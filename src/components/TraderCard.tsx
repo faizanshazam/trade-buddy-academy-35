@@ -33,8 +33,8 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
   };
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-      <CardContent className="p-6">
+    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer w-full h-full">
+      <CardContent className="p-6 flex flex-col h-full">
         <div className="flex items-start gap-4 mb-4" onClick={handleViewProfile}>
           <img
             src={trader.photo}
@@ -73,29 +73,31 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
           </div>
         </div>
 
-        {/* Fix: Make all buttons wrap flexibly and stay inside the card, even on smaller screens */}
-        <div className="flex flex-wrap gap-2">
-          <Button 
-            className="flex-1 min-w-[120px] bg-blue-600 hover:bg-blue-700" 
-            size="sm"
-            onClick={handleViewProfile}
-          >
-            View Profile
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleViewCourses}
-            className="flex items-center gap-2 flex-1 min-w-[120px]"
-          >
-            <BookOpen className="w-4 h-4" />
-            Explore Courses
-          </Button>
-          {/* RequestCallDialog button will flex and never overflow */}
-          <div className="flex-1 min-w-[120px]">
+        <div className="flex flex-row flex-wrap gap-2 mt-auto">
+          <div className="flex-1 min-w-[110px]">
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              size="sm"
+              onClick={handleViewProfile}
+            >
+              View Profile
+            </Button>
+          </div>
+          <div className="flex-1 min-w-[110px]">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleViewCourses}
+              className="w-full flex items-center gap-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              Explore Courses
+            </Button>
+          </div>
+          <div className="flex-1 min-w-[110px]">
             <RequestCallDialog
               traderName={trader.name}
-              triggerClassName="w-full"
+              triggerClassName="w-full text-center"
             />
           </div>
         </div>
