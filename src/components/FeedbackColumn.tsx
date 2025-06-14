@@ -1,105 +1,74 @@
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FeedbackCard, { FeedbackCardProps } from "./FeedbackCard";
+
+type Direction = "up" | "down";
 
 interface FeedbackColumnProps {
   cards: FeedbackCardProps[];
-  direction: "up" | "down";
-  durationMs?: number; // duration in ms for a full loop
+  direction: Direction;
+  heightPx: number;
+  visibleCount: number;
+  intervalMs?: number;
 }
 
-const VISIBLE_COUNT = 3;
-
 const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
-  cards,
-  direction,
-  durationMs = 18000, // 18 seconds for a full loop
+  cards, direction, heightPx, visibleCount, intervalMs = 2200
 }) => {
-  const columnRef = useRef<HTMLDivElement>(null);
-  const [cardHeights, setCardHeights] = useState<number[]>([]);
-  const [totalHeight, setTotalHeight] = useState(0);
+  const [startIdx, setStartIdx] = useState(0);
+  const [isSliding, setIsSliding] = useState(false);
+  const [slideOffset, setSlideOffset] = useState(0); // 0 or 1
 
-  // Measure each card to get total column height
+  // Calculate children for smooth circular animation
+  const circularCards: FeedbackCardProps[] = [];
+  for (let i = 0; i < visibleCount + 1; i++) {
+    const idx = (startIdx + (direction === "down" ? i : cards.length - i)) % cards.length;
+    const actualIdx = ((idx % cards.length) + cards.length) % cards.length;
+    circularCards.push(cards[actualIdx]);
+  }
+  // The topmost card (for sliding) is at start
+
   useEffect(() => {
-    if (!columnRef.current) return;
-    const cardEls = Array.from(columnRef.current.children) as HTMLElement[];
-    const heights = cardEls.map((el) => el.getBoundingClientRect().height);
-    setCardHeights(heights);
-    setTotalHeight(heights.reduce((a, b) => a + b, 0));
-  }, [cards]);
+    const timer = setInterval(() => {
+      setIsSliding(true);
+      setSlideOffset(1);
+      setTimeout(() => {
+        setStartIdx(prev => (direction === "down"
+          ? (prev + 1) % cards.length
+          : (prev - 1 + cards.length) % cards.length
+        ));
+        setIsSliding(false);
+        setSlideOffset(0);
+      }, 520); // should match duration below
+    }, intervalMs);
+    return () => clearInterval(timer);
+  }, [cards.length, direction, intervalMs]);
 
-  // Reset animation on cards/config change
-  useEffect(() => {
-    if (!columnRef.current) return;
-    columnRef.current.style.animation = "none";
-    // Trigger reflow
-    void columnRef.current.offsetWidth;
-    columnRef.current.style.animation = `${direction === "down" ? "column-down" : "column-up"} ${durationMs}ms linear infinite`;
-  }, [cards, totalHeight, direction, durationMs]);
+  const colHeight = heightPx;
+  const cardHeight = colHeight / visibleCount;
 
-  // Duplicate card list (for seamless scroll loop)
-  const displayCards = [...cards, ...cards];
-
-  // Fading mask height (px)
-  const FADE_SIZE = 60;
+  // For "down", cards stack downwards; for "up", upwards. Transform Y movement accordingly.
+  let transform: string;
+  if (direction === "down") {
+    transform = `translateY(${slideOffset * cardHeight * 1}px)`;
+  } else {
+    transform = `translateY(-${slideOffset * cardHeight * 1}px)`;
+  }
 
   return (
-    <div
-      className="flex-1 flex flex-col min-w-[320px] max-w-lg items-stretch relative overflow-hidden"
-      style={{
-        minHeight: 0,
-        maxHeight: "80vh",
-      }}
-    >
-      {/* Animated column */}
+    <div style={{ height: `${colHeight}px`, overflow: "hidden" }} className="flex-1 flex flex-col">
       <div
-        ref={columnRef}
-        className="flex flex-col gap-6"
+        className="flex flex-col gap-5 transition-transform duration-500 will-change-transform"
         style={{
-          animation: `${direction === "down" ? "column-down" : "column-up"} ${durationMs}ms linear infinite`,
+          transform,
+          transitionTimingFunction: "cubic-bezier(0.65,0,0.35,1)",
+          height: cardHeight * (visibleCount + 1)
         }}
       >
-        {displayCards.map((card, idx) => (
-          <FeedbackCard
-            key={card.url + "_" + idx}
-            {...card}
-          />
-        ))}
+        {circularCards.map((card, idx) =>
+          <FeedbackCard key={card.url + "_" + idx} {...card} />
+        )}
       </div>
-      {/* Fade overlay for top & bottom for circular visual effect */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 w-full"
-        style={{
-          height: FADE_SIZE,
-          top: 0,
-          background: "linear-gradient(to bottom, rgba(240,246,255,.98) 70%, rgba(240,246,255,0))",
-          zIndex: 10,
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 w-full"
-        style={{
-          height: FADE_SIZE,
-          bottom: 0,
-          background: "linear-gradient(to top, rgba(240,246,255,.98) 70%, rgba(240,246,255,0))",
-          zIndex: 10,
-        }}
-      />
-      {/* Keyframes injected for column scroll */}
-      <style>
-        {`
-          @keyframes column-down {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-50%); }
-          }
-          @keyframes column-up {
-            0% { transform: translateY(-50%); }
-            100% { transform: translateY(0); }
-          }
-        `}
-      </style>
     </div>
   );
 };

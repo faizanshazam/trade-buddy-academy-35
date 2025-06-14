@@ -1,9 +1,10 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { Linkedin, Twitter } from "lucide-react";
+import FeedbackColumn from "./FeedbackColumn";
+import FeedbackCard, { FeedbackCardProps } from "./FeedbackCard";
 
-// Expanded feedback data (as before)
-const FEEDBACKS = [
+// Expanded feedback data (added even more posts)
+const FEEDBACKS: FeedbackCardProps[] = [
   {
     id: 1,
     name: "Ankit Verma",
@@ -100,15 +101,40 @@ const FEEDBACKS = [
     content: "Finally found a place to grow as a trader. Friendly, honest, motivating.",
     url: "https://x.com/jasmineseth/status/38488101",
   },
+  {
+    name: "Shweta K",
+    avatar: "https://randomuser.me/api/portraits/women/53.jpg",
+    platform: "x",
+    content: "Even as a busy mom, these concise WhatsApp tips helped me stay in the market.",
+    url: "https://x.com/shwetak/status/92839102",
+  },
+  {
+    name: "Rahul Ahuja",
+    avatar: "https://randomuser.me/api/portraits/men/47.jpg",
+    platform: "linkedin",
+    content: "Loved the honest breakdowns and no-nonsense strategy discussion.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:11118228/",
+  },
+  {
+    name: "Harshita Singh",
+    avatar: "https://randomuser.me/api/portraits/women/19.jpg",
+    platform: "linkedin",
+    content: "Quality mentoring, responsive team. My friends join too now!",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:92939101/",
+  },
+  {
+    name: "Subham Roy",
+    avatar: "https://randomuser.me/api/portraits/men/37.jpg",
+    platform: "x",
+    content: "I doubled my confidence and capital in 4 months. Thank you, team.",
+    url: "https://x.com/subhamroy/status/38592920",
+  },
 ];
 
-const CARDS_PER_COL = 3;
 const COL_COUNT = 3;
-
-type Feedback = typeof FEEDBACKS[number];
-
+const CARDS_PER_COL = 3;
+// Distribute posts among columns (round-robin)
 function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
-  // Distribute round-robin
   const columns: T[][] = Array.from({ length: colCount }, () => []);
   items.forEach((item, idx) => {
     columns[idx % colCount].push(item);
@@ -116,138 +142,60 @@ function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
   return columns;
 }
 
-// Animate smoothly upward with phase offset for each column
-const COL_INTERVAL = 2300; // ms, one shared interval
-
 export const TraderFeedbackCarousel: React.FC = () => {
   const cols = splitIntoColumns(FEEDBACKS, COL_COUNT);
-  const colLengths = cols.map(col => col.length);
+  // viewport height calculation so all cards are big/clear
+  const VISIBLE_CARDS = 3;
+  const feedbackSectionId = "feedback-carousel-section";
 
-  // Each column has its own index, start at a different phase
-  const [startIndices, setStartIndices] = useState([
-    0,
-    Math.floor(colLengths[1] / 3),
-    Math.floor(colLengths[2] / 2),
-  ]);
-  // For triggering transition effect after mount
-  const [isTransitioning, setIsTransitioning] = useState([false, false, false]);
-  // For sliding animation
-  const [slideOffsets, setSlideOffsets] = useState([0, 0, 0]);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    // One shared timer
-    intervalRef.current = setInterval(() => {
-      setSlideOffsets([1, 1, 1]);
-      setIsTransitioning([true, true, true]);
-      setTimeout(() => {
-        setStartIndices((prev) =>
-          prev.map((idx, col) => (idx + 1) % colLengths[col])
-        );
-        setSlideOffsets([0, 0, 0]);
-        setIsTransitioning([false, false, false]);
-      }, 480); // matches CSS transition duration
-    }, COL_INTERVAL);
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+  // Scroll-to-action on first scroll of Index page
+  React.useEffect(() => {
+    let hasJumped = false;
+    const handleScroll = () => {
+      if (!hasJumped) {
+        hasJumped = true;
+        const section = document.getElementById(feedbackSectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      }
     };
-    // eslint-disable-next-line
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Compute the visible cards for a column for circular logic
-  const getColCards = (col: number) => {
-    const data = cols[col];
-    const idx = startIndices[col];
-    const arr: Feedback[] = [];
-    for (let i = 0; i < CARDS_PER_COL + 1; i++) {
-      arr.push(data[(idx + i) % data.length]);
-    }
-    return arr;
-  };
-
+  // Responsive: Full viewport section (on large screens), still readable mobile
   return (
-    <section className="w-full py-14 bg-blue-50 border-t border-blue-100 mt-8">
-      <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
-        Where we shine
-      </h2>
-      <div className="relative max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[0, 1, 2].map((colIdx) => (
-            <div key={colIdx} className="overflow-hidden h-[320px] flex flex-col">
-              <div
-                className={`flex flex-col gap-6 transition-transform duration-500 will-change-transform`}
-                style={{
-                  transform: `translateY(-${
-                    slideOffsets[colIdx]
-                      ? (100 / CARDS_PER_COL)
-                      : 0
-                  }%)`,
-                  transitionTimingFunction: "cubic-bezier(0.55,0,0.45,1)",
-                  transitionDuration: isTransitioning[colIdx] ? "480ms" : "0ms",
-                  height: "100%", // ensure height remains stable
-                }}
-              >
-                {getColCards(colIdx).map((fb, cardIdx) => (
-                  <a
-                    key={fb.id + "_" + cardIdx}
-                    href={fb.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group card-feedback block bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 hover:scale-105 animate-fade-in"
-                    style={{
-                      animation: "fade-in 0.7s cubic-bezier(0.4,0,0.6,1)",
-                      minHeight: "96px"
-                    }}
-                  >
-                    <div className="flex items-center gap-3 p-5 pb-3">
-                      <img
-                        src={fb.avatar}
-                        alt={fb.name}
-                        className="w-12 h-12 rounded-full border border-gray-200"
-                      />
-                      <div>
-                        <p className="font-semibold text-gray-800">{fb.name}</p>
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                          {fb.platform === "linkedin" ? (
-                            <Linkedin className="w-4 h-4 text-blue-700" />
-                          ) : (
-                            <Twitter className="w-4 h-4 text-blue-500" />
-                          )}
-                          <span className="ml-1">
-                            {fb.platform === "linkedin" ? "LinkedIn" : "X"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="px-5 pb-6">
-                      <p className="text-gray-600 text-sm">{fb.content}</p>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
+    <section
+      id={feedbackSectionId}
+      className="w-full bg-blue-50 border-t border-blue-100"
+      style={{ minHeight: "min(92vh,1000px)", display: "flex", alignItems: "center" }}
+    >
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 flex flex-col items-center">
+        <h2 className="text-4xl font-bold text-center text-gray-900 mb-8">
+          Where we shine
+        </h2>
+        <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch">
+          <FeedbackColumn
+            cards={cols[0]}
+            direction="down"
+            heightPx={540}
+            visibleCount={VISIBLE_CARDS}
+          />
+          <FeedbackColumn
+            cards={cols[1]}
+            direction="up"
+            heightPx={540}
+            visibleCount={VISIBLE_CARDS}
+          />
+          <FeedbackColumn
+            cards={cols[2]}
+            direction="down"
+            heightPx={540}
+            visibleCount={VISIBLE_CARDS}
+          />
         </div>
-        {/* Indicator dots for each column */}
-        <div className="flex justify-center gap-2 mt-4">
-          {[0, 1, 2].map((colIdx) => (
-            <div key={colIdx} className="flex gap-1">
-              {Array(Math.ceil(cols[colIdx].length / CARDS_PER_COL))
-                .fill(0)
-                .map((_, i) => (
-                  <span
-                    key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i === Math.floor(startIndices[colIdx] / 1)
-                        ? "bg-blue-600"
-                        : "bg-blue-200"
-                    }`}
-                  />
-                ))}
-            </div>
-          ))}
-        </div>
+        {/* Optional: indicator dots, but cards themselves are now big enough */}
       </div>
     </section>
   );
@@ -255,4 +203,5 @@ export const TraderFeedbackCarousel: React.FC = () => {
 
 export default TraderFeedbackCarousel;
 
-// NOTE: This file is now very long (230+ lines). Consider refactoring into smaller focused components: e.g. FeedbackColumn, FeedbackCard, etc.
+// NOTE: TraderFeedbackCarousel.tsx is now much shorter and easier to maintain.
+// FeedbackColumn.tsx and FeedbackCard.tsx separate concerns for readability.
