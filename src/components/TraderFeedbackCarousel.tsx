@@ -1,10 +1,20 @@
-import React, { useEffect } from "react";
-import FeedbackColumn from "./FeedbackColumn";
-import { FeedbackCardProps } from "./FeedbackCard";
 
-// Updated feedback data: removed id property
-const FEEDBACKS: FeedbackCardProps[] = [
+import React, { useEffect, useRef, useState } from "react";
+import { Linkedin, Twitter } from "lucide-react";
+
+type Feedback = {
+  id: number;
+  name: string;
+  avatar: string; // URL to avatar image
+  platform: "linkedin" | "x";
+  content: string; // short text snippet
+  url: string; // external post link
+};
+
+// Example feedback data
+const FEEDBACKS: Feedback[] = [
   {
+    id: 1,
     name: "Ankit Verma",
     avatar: "https://randomuser.me/api/portraits/men/12.jpg",
     platform: "linkedin",
@@ -12,6 +22,7 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:123456/",
   },
   {
+    id: 2,
     name: "Riya Sharma",
     avatar: "https://randomuser.me/api/portraits/women/43.jpg",
     platform: "x",
@@ -19,6 +30,7 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/riya_sharma/status/17786442",
   },
   {
+    id: 3,
     name: "Saurabh Jain",
     avatar: "https://randomuser.me/api/portraits/men/44.jpg",
     platform: "linkedin",
@@ -26,6 +38,7 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:24124124/",
   },
   {
+    id: 4,
     name: "Priya Mehra",
     avatar: "https://randomuser.me/api/portraits/women/36.jpg",
     platform: "x",
@@ -33,6 +46,7 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/priyamehra_trader/status/19239283",
   },
   {
+    id: 5,
     name: "Akshay Pillai",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     platform: "linkedin",
@@ -40,166 +54,92 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:44223091/",
   },
   {
+    id: 6,
     name: "Namrata Kulkarni",
     avatar: "https://randomuser.me/api/portraits/women/22.jpg",
     platform: "x",
     content: "Strategies here are next-level—big thanks to the mentor team.",
     url: "https://x.com/namratak/status/38488201",
   },
-  {
-    name: "Deepak Patel",
-    avatar: "https://randomuser.me/api/portraits/men/51.jpg",
-    platform: "linkedin",
-    content: "Was new to options. The community here made learning enjoyable & profitable!",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:553399881/",
-  },
-  {
-    name: "Sayali Bansode",
-    avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-    platform: "x",
-    content: "Loved the approachable mentors. My confidence in the market is way higher.",
-    url: "https://x.com/sayalib/status/299483910",
-  },
-  {
-    name: "Manoj Rao",
-    avatar: "https://randomuser.me/api/portraits/men/89.jpg",
-    platform: "linkedin",
-    content: "The practical examples & weekly assignments made a real difference.",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:66234011/",
-  },
-  {
-    name: "Aparna Joshi",
-    avatar: "https://randomuser.me/api/portraits/women/41.jpg",
-    platform: "x",
-    content: "Clear explanations and real trade breakdowns changed the game for me.",
-    url: "https://x.com/aparna_j/status/199948382",
-  },
-  {
-    name: "Karan Ganesh",
-    avatar: "https://randomuser.me/api/portraits/men/61.jpg",
-    platform: "linkedin",
-    content: "Always helpful and transparent. Zero fluff, only real results.",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:64040555/",
-  },
-  {
-    name: "Jasmine Seth",
-    avatar: "https://randomuser.me/api/portraits/women/56.jpg",
-    platform: "x",
-    content: "Finally found a place to grow as a trader. Friendly, honest, motivating.",
-    url: "https://x.com/jasmineseth/status/38488101",
-  },
-  {
-    name: "Shweta K",
-    avatar: "https://randomuser.me/api/portraits/women/53.jpg",
-    platform: "x",
-    content: "Even as a busy mom, these concise WhatsApp tips helped me stay in the market.",
-    url: "https://x.com/shwetak/status/92839102",
-  },
-  {
-    name: "Rahul Ahuja",
-    avatar: "https://randomuser.me/api/portraits/men/47.jpg",
-    platform: "linkedin",
-    content: "Loved the honest breakdowns and no-nonsense strategy discussion.",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:11118228/",
-  },
-  {
-    name: "Harshita Singh",
-    avatar: "https://randomuser.me/api/portraits/women/19.jpg",
-    platform: "linkedin",
-    content: "Quality mentoring, responsive team. My friends join too now!",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:92939101/",
-  },
-  {
-    name: "Subham Roy",
-    avatar: "https://randomuser.me/api/portraits/men/37.jpg",
-    platform: "x",
-    content: "I doubled my confidence and capital in 4 months. Thank you, team.",
-    url: "https://x.com/subhamroy/status/38592920",
-  },
-  // Add more posts for even more variety
-  {
-    name: "Vidya Chopra",
-    avatar: "https://randomuser.me/api/portraits/women/72.jpg",
-    platform: "linkedin",
-    content: "Straightforward advice, clarity like never before. Joined every session without fail.",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:22010221/",
-  },
-  {
-    name: "Siddharth Kale",
-    avatar: "https://randomuser.me/api/portraits/men/24.jpg",
-    platform: "x",
-    content: "I finally understand credit spreads thanks to this team. Forever grateful!",
-    url: "https://x.com/siddkale/status/32019283",
-  },
-  {
-    name: "Aarti Pandey",
-    avatar: "https://randomuser.me/api/portraits/women/28.jpg",
-    platform: "linkedin",
-    content: "The growth I have seen in my P&L is directly due to the mentorship here.",
-    url: "https://www.linkedin.com/feed/update/urn:li:activity:78282910/",
-  },
 ];
 
-const COL_COUNT = 3;
-
-// Distribute posts among columns (round-robin)
-function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
-  const columns: T[][] = Array.from({ length: colCount }, () => []);
-  items.forEach((item, idx) => {
-    columns[idx % colCount].push(item);
-  });
-  return columns;
-}
+const CARDS_PER_ROW = 3;
+const ANIMATION_INTERVAL = 2500; // ms
 
 export const TraderFeedbackCarousel: React.FC = () => {
-  const cols = splitIntoColumns(FEEDBACKS, 3);
+  const [startIndex, setStartIndex] = useState(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Section ID for scroll
-  const feedbackSectionId = "feedback-carousel-section";
-
-  // Scroll-to-section on first page scroll
-  React.useEffect(() => {
-    let hasJumped = false;
-    const handleScroll = () => {
-      if (!hasJumped) {
-        hasJumped = true;
-        const section = document.getElementById(feedbackSectionId);
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth" });
-        }
-      }
+  // Cyclically move cards upwards every 2.5s
+  useEffect(() => {
+    timeoutRef.current = setTimeout(() => {
+      setStartIndex((prev) => (prev + CARDS_PER_ROW) % FEEDBACKS.length);
+    }, ANIMATION_INTERVAL);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [startIndex]);
 
-  // Very tall to emphasize carousel
+  // Get the currently visible cards in order, looping circularly
+  const visibleCards = Array(CARDS_PER_ROW)
+    .fill(0)
+    .map((_, idx) => FEEDBACKS[(startIndex + idx) % FEEDBACKS.length]);
+
   return (
-    <section
-      id={feedbackSectionId}
-      className="w-full bg-blue-50 border-t border-blue-100 flex items-center"
-      style={{ minHeight: "100vh", height: "100vh" }}
-    >
-      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-12 flex flex-col items-center justify-center h-full">
-        <h2 className="text-4xl font-bold text-center text-gray-900 mb-8">
-          Where we shine
-        </h2>
-        <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch relative h-full min-h-[60vh]">
-          <FeedbackColumn
-            cards={cols[0]}
-            direction="down"
-            durationMs={20000}
-          />
-          <FeedbackColumn
-            cards={cols[1]}
-            direction="up"
-            durationMs={21000}
-          />
-          <FeedbackColumn
-            cards={cols[2]}
-            direction="down"
-            durationMs={22800}
-          />
+    <section className="w-full py-14 bg-blue-50 border-t border-blue-100 mt-8">
+      <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Trader Feedback</h2>
+      <div className="relative max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {visibleCards.map((fb, idx) => (
+            <a
+              key={fb.id}
+              href={fb.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group card-feedback block bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 hover:scale-105"
+              style={{
+                // Entry animation: slide up on change
+                animation: "fade-in 0.7s cubic-bezier(0.4,0,0.6,1)"
+              }}
+            >
+              <div className="flex items-center gap-3 p-5 pb-3">
+                <img
+                  src={fb.avatar}
+                  alt={fb.name}
+                  className="w-12 h-12 rounded-full border border-gray-200"
+                />
+                <div>
+                  <p className="font-semibold text-gray-800">{fb.name}</p>
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    {fb.platform === "linkedin" ? (
+                      <Linkedin className="w-4 h-4 text-blue-700" />
+                    ) : (
+                      <Twitter className="w-4 h-4 text-blue-500" />
+                    )}
+                    <span className="ml-1">{fb.platform === "linkedin" ? "LinkedIn" : "X"}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="px-5 pb-6">
+                <p className="text-gray-600 text-sm">{fb.content}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+        {/* Simple indicator dots */}
+        <div className="flex justify-center gap-1 mt-4">
+          {Array(Math.ceil(FEEDBACKS.length / CARDS_PER_ROW))
+            .fill(0)
+            .map((_, i) => (
+              <span
+                key={i}
+                className={`w-2 h-2 rounded-full ${
+                  i === Math.floor(startIndex / CARDS_PER_ROW)
+                    ? "bg-blue-600"
+                    : "bg-blue-200"
+                }`}
+              />
+            ))}
         </div>
       </div>
     </section>
