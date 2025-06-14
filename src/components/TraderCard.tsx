@@ -72,32 +72,29 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
             <span>{trader.studentsCount} students</span>
           </div>
         </div>
-
-        <div className="flex flex-row flex-wrap gap-2 mt-auto">
-          <div className="flex-1 min-w-[110px]">
+        
+        {/* Proper dynamic grid for buttons */}
+        <div className="mt-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full">
             <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 font-semibold"
               size="sm"
               onClick={handleViewProfile}
             >
               View Profile
             </Button>
-          </div>
-          <div className="flex-1 min-w-[110px]">
             <Button 
               variant="outline" 
               size="sm"
               onClick={handleViewCourses}
-              className="w-full flex items-center gap-2"
+              className="w-full flex items-center gap-2 font-semibold"
             >
               <BookOpen className="w-4 h-4" />
               Explore Courses
             </Button>
-          </div>
-          <div className="flex-1 min-w-[110px]">
             <RequestCallDialog
               traderName={trader.name}
-              triggerClassName="w-full text-center"
+              triggerClassName="w-full font-semibold"
             />
           </div>
         </div>
