@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Star, Users, Clock, MessageSquare, ExternalLink, Upload, TrendingUp, BarChart3, X } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { RequestCallDialog } from "@/components/RequestCallDialog";
 
 const TraderProfile = () => {
   const { id } = useParams();
@@ -225,6 +226,11 @@ const TraderProfile = () => {
                       <ExternalLink className="w-4 h-4" />
                       View External Profile
                     </Button>
+                    <RequestCallDialog
+                      traderName={trader.name}
+                      triggerClassName="bg-pink-100 text-pink-700 hover:bg-pink-200 font-semibold"
+                      callCharge="₹499 per 30min"
+                    />
                   </div>
                 </div>
               </div>

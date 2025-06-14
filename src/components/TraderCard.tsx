@@ -1,9 +1,9 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Users, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { RequestCallDialog } from "./RequestCallDialog";
 
 interface TraderCardProps {
   trader: {
@@ -89,6 +89,10 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
             <BookOpen className="w-4 h-4" />
             Explore Courses
           </Button>
+          <RequestCallDialog
+            traderName={trader.name}
+            triggerClassName="flex-1"
+          />
         </div>
       </CardContent>
     </Card>
