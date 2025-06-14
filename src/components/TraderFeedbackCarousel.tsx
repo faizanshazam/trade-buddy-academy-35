@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Linkedin, Twitter } from "lucide-react";
-import FeedbackColumn from "./FeedbackColumn";
-import FeedbackCard, { FeedbackCardProps } from "./FeedbackCard";
 
-// Expanded feedback data (added even more posts)
+import React, { useEffect } from "react";
+import FeedbackColumn from "./FeedbackColumn";
+import { FeedbackCardProps } from "./FeedbackCard";
+
+// Updated feedback data: removed id property
 const FEEDBACKS: FeedbackCardProps[] = [
   {
-    id: 1,
     name: "Ankit Verma",
     avatar: "https://randomuser.me/api/portraits/men/12.jpg",
     platform: "linkedin",
@@ -14,7 +13,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:123456/",
   },
   {
-    id: 2,
     name: "Riya Sharma",
     avatar: "https://randomuser.me/api/portraits/women/43.jpg",
     platform: "x",
@@ -22,7 +20,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/riya_sharma/status/17786442",
   },
   {
-    id: 3,
     name: "Saurabh Jain",
     avatar: "https://randomuser.me/api/portraits/men/44.jpg",
     platform: "linkedin",
@@ -30,7 +27,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:24124124/",
   },
   {
-    id: 4,
     name: "Priya Mehra",
     avatar: "https://randomuser.me/api/portraits/women/36.jpg",
     platform: "x",
@@ -38,7 +34,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/priyamehra_trader/status/19239283",
   },
   {
-    id: 5,
     name: "Akshay Pillai",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     platform: "linkedin",
@@ -46,7 +41,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:44223091/",
   },
   {
-    id: 6,
     name: "Namrata Kulkarni",
     avatar: "https://randomuser.me/api/portraits/women/22.jpg",
     platform: "x",
@@ -54,7 +48,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/namratak/status/38488201",
   },
   {
-    id: 7,
     name: "Deepak Patel",
     avatar: "https://randomuser.me/api/portraits/men/51.jpg",
     platform: "linkedin",
@@ -62,7 +55,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:553399881/",
   },
   {
-    id: 8,
     name: "Sayali Bansode",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",
     platform: "x",
@@ -70,7 +62,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/sayalib/status/299483910",
   },
   {
-    id: 9,
     name: "Manoj Rao",
     avatar: "https://randomuser.me/api/portraits/men/89.jpg",
     platform: "linkedin",
@@ -78,7 +69,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:66234011/",
   },
   {
-    id: 10,
     name: "Aparna Joshi",
     avatar: "https://randomuser.me/api/portraits/women/41.jpg",
     platform: "x",
@@ -86,7 +76,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://x.com/aparna_j/status/199948382",
   },
   {
-    id: 11,
     name: "Karan Ganesh",
     avatar: "https://randomuser.me/api/portraits/men/61.jpg",
     platform: "linkedin",
@@ -94,7 +83,6 @@ const FEEDBACKS: FeedbackCardProps[] = [
     url: "https://www.linkedin.com/feed/update/urn:li:activity:64040555/",
   },
   {
-    id: 12,
     name: "Jasmine Seth",
     avatar: "https://randomuser.me/api/portraits/women/56.jpg",
     platform: "x",
@@ -129,10 +117,32 @@ const FEEDBACKS: FeedbackCardProps[] = [
     content: "I doubled my confidence and capital in 4 months. Thank you, team.",
     url: "https://x.com/subhamroy/status/38592920",
   },
+  // Add more posts for even more variety
+  {
+    name: "Vidya Chopra",
+    avatar: "https://randomuser.me/api/portraits/women/72.jpg",
+    platform: "linkedin",
+    content: "Straightforward advice, clarity like never before. Joined every session without fail.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:22010221/",
+  },
+  {
+    name: "Siddharth Kale",
+    avatar: "https://randomuser.me/api/portraits/men/24.jpg",
+    platform: "x",
+    content: "I finally understand credit spreads thanks to this team. Forever grateful!",
+    url: "https://x.com/siddkale/status/32019283",
+  },
+  {
+    name: "Aarti Pandey",
+    avatar: "https://randomuser.me/api/portraits/women/28.jpg",
+    platform: "linkedin",
+    content: "The growth I have seen in my P&L is directly due to the mentorship here.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:78282910/",
+  },
 ];
 
 const COL_COUNT = 3;
-const CARDS_PER_COL = 3;
+
 // Distribute posts among columns (round-robin)
 function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
   const columns: T[][] = Array.from({ length: colCount }, () => []);
@@ -144,12 +154,12 @@ function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
 
 export const TraderFeedbackCarousel: React.FC = () => {
   const cols = splitIntoColumns(FEEDBACKS, COL_COUNT);
-  // viewport height calculation so all cards are big/clear
-  const VISIBLE_CARDS = 3;
+
+  // Section ID for scroll
   const feedbackSectionId = "feedback-carousel-section";
 
-  // Scroll-to-action on first scroll of Index page
-  React.useEffect(() => {
+  // Scroll-to-section on first page scroll
+  useEffect(() => {
     let hasJumped = false;
     const handleScroll = () => {
       if (!hasJumped) {
@@ -164,44 +174,45 @@ export const TraderFeedbackCarousel: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Responsive: Full viewport section (on large screens), still readable mobile
+  // Layout: take full screen by default
   return (
     <section
       id={feedbackSectionId}
-      className="w-full bg-blue-50 border-t border-blue-100"
-      style={{ minHeight: "min(92vh,1000px)", display: "flex", alignItems: "center" }}
+      className="w-full bg-blue-50 border-t border-blue-100 flex items-center"
+      style={{ minHeight: "100vh", height: "100vh" }}
     >
-      <div className="w-full max-w-7xl mx-auto px-4 py-20 flex flex-col items-center">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-16 flex flex-col items-center">
         <h2 className="text-4xl font-bold text-center text-gray-900 mb-8">
           Where we shine
         </h2>
-        <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch">
+        <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch relative">
+          {/* Fade mask overlay */}
+          <div className="absolute top-0 left-0 w-full h-16 pointer-events-none" style={{
+              background: "linear-gradient(to bottom, #f0f6ff 92%,transparent)"
+            }} />
+          <div className="absolute bottom-0 left-0 w-full h-16 pointer-events-none" style={{
+              background: "linear-gradient(to top, #f0f6ff 92%,transparent)"
+            }} />
+          {/* Each column: controls independent direction and children */}
           <FeedbackColumn
             cards={cols[0]}
             direction="down"
-            heightPx={540}
-            visibleCount={VISIBLE_CARDS}
-          />
+            intervalMs={3500}
+            />
           <FeedbackColumn
             cards={cols[1]}
             direction="up"
-            heightPx={540}
-            visibleCount={VISIBLE_CARDS}
-          />
+            intervalMs={3500}
+            />
           <FeedbackColumn
             cards={cols[2]}
             direction="down"
-            heightPx={540}
-            visibleCount={VISIBLE_CARDS}
-          />
+            intervalMs={3500}
+            />
         </div>
-        {/* Optional: indicator dots, but cards themselves are now big enough */}
       </div>
     </section>
   );
 };
 
 export default TraderFeedbackCarousel;
-
-// NOTE: TraderFeedbackCarousel.tsx is now much shorter and easier to maintain.
-// FeedbackColumn.tsx and FeedbackCard.tsx separate concerns for readability.
