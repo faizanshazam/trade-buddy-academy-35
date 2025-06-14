@@ -7,7 +7,7 @@ type Direction = "up" | "down";
 interface FeedbackColumnProps {
   cards: FeedbackCardProps[];
   direction: Direction;
-  intervalMs?: number; // default to 3500 for slower
+  intervalMs?: number; // default to 4500 for even slower
 }
 
 const VISIBLE_COUNT = 3;
@@ -18,13 +18,13 @@ const mod = (n: number, m: number) => ((n % m) + m) % m;
 const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
   cards,
   direction,
-  intervalMs = 3500, // slower animation
+  intervalMs = 4500, // even slower by default
 }) => {
   const [startIdx, setStartIdx] = useState(0);
   const [isSliding, setIsSliding] = useState(false);
 
   // Animation duration for css transition
-  const TRANSITION_MS = 1150;
+  const TRANSITION_MS = 1700;
 
   // Array of visible + 1 cards for stacking
   const circularCards = useMemo(() => {
@@ -58,12 +58,15 @@ const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
   // Determine offset for sliding
   const offset = isSliding ? (direction === "down" ? 1 : -1) : 0;
 
+  // Fading mask for top & bottom
+  const FADE_SIZE = 48;
+
   return (
     <div
       className="flex-1 flex flex-col min-w-[320px] max-w-lg items-stretch relative overflow-hidden"
       style={{
         minHeight: 0,
-        maxHeight: "70vh",
+        maxHeight: "80vh",
       }}
     >
       <div
@@ -74,16 +77,31 @@ const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
             ? `transform ${TRANSITION_MS}ms cubic-bezier(0.65,0,0.35,1)`
             : "none",
           willChange: "transform",
-          // Height adapts: no fixed height
         }}
       >
         {circularCards.map((card, idx) => (
           <FeedbackCard key={card.url + "_" + idx} {...card} />
         ))}
       </div>
-
-      {/* Fade overlay for top and bottom, only on larger screens */}
-      {/* Not strictly needed here, handled in parent for full columns */}
+      {/* Fade overlay for top & bottom for circular visual effect */}
+      <div
+        className="pointer-events-none absolute left-0 w-full"
+        style={{
+          height: FADE_SIZE,
+          top: 0,
+          background: "linear-gradient(to bottom, rgba(240,246,255,.98) 70%, rgba(240,246,255,0))",
+          zIndex: 10,
+        }}
+      />
+      <div
+        className="pointer-events-none absolute left-0 w-full"
+        style={{
+          height: FADE_SIZE,
+          bottom: 0,
+          background: "linear-gradient(to top, rgba(240,246,255,.98) 70%, rgba(240,246,255,0))",
+          zIndex: 10,
+        }}
+      />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import FeedbackColumn from "./FeedbackColumn";
 import { FeedbackCardProps } from "./FeedbackCard";
@@ -153,7 +152,7 @@ function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
 }
 
 export const TraderFeedbackCarousel: React.FC = () => {
-  const cols = splitIntoColumns(FEEDBACKS, COL_COUNT);
+  const cols = splitIntoColumns(FEEDBACKS, 3);
 
   // Section ID for scroll
   const feedbackSectionId = "feedback-carousel-section";
@@ -174,40 +173,33 @@ export const TraderFeedbackCarousel: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Layout: take full screen by default
+  // Layout: take full screen by default, more screen area for feedback!
   return (
     <section
       id={feedbackSectionId}
       className="w-full bg-blue-50 border-t border-blue-100 flex items-center"
       style={{ minHeight: "100vh", height: "100vh" }}
     >
-      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-16 flex flex-col items-center">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-12 flex flex-col items-center justify-center h-full">
         <h2 className="text-4xl font-bold text-center text-gray-900 mb-8">
           Where we shine
         </h2>
-        <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch relative">
-          {/* Fade mask overlay */}
-          <div className="absolute top-0 left-0 w-full h-16 pointer-events-none" style={{
-              background: "linear-gradient(to bottom, #f0f6ff 92%,transparent)"
-            }} />
-          <div className="absolute bottom-0 left-0 w-full h-16 pointer-events-none" style={{
-              background: "linear-gradient(to top, #f0f6ff 92%,transparent)"
-            }} />
-          {/* Each column: controls independent direction and children */}
+        <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch relative h-full min-h-[60vh]">
+          {/* Fade overlays are in the column for even better visual */}
           <FeedbackColumn
             cards={cols[0]}
             direction="down"
-            intervalMs={3500}
+            intervalMs={5000}
             />
           <FeedbackColumn
             cards={cols[1]}
             direction="up"
-            intervalMs={3500}
+            intervalMs={5000}
             />
           <FeedbackColumn
             cards={cols[2]}
             direction="down"
-            intervalMs={3500}
+            intervalMs={5000}
             />
         </div>
       </div>

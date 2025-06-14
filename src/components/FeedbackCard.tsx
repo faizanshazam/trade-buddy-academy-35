@@ -25,9 +25,11 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
     style={{
       margin: "0 auto",
       overflow: "hidden",
-      minHeight: "110px",
+      width: "100%",
       maxWidth: 480,
-      padding: "0", // Let content decide space
+      padding: 0,
+      minHeight: 110,
+      // Adaptive height!
     }}
   >
     <div className="flex items-center gap-3 p-5 pb-3">
@@ -51,7 +53,9 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({
       </div>
     </div>
     <div className="px-5 pb-6">
-      <p className="text-gray-600 text-[15px] break-words">{content}</p>
+      <p className="text-gray-600 text-[15px] break-words leading-relaxed">
+        {content}
+      </p>
     </div>
   </a>
 );
