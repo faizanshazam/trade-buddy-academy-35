@@ -1,65 +1,47 @@
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import FeedbackCard, { FeedbackCardProps } from "./FeedbackCard";
-
-type Direction = "up" | "down";
 
 interface FeedbackColumnProps {
   cards: FeedbackCardProps[];
-  direction: Direction;
-  intervalMs?: number; // default to 4500 for even slower
+  direction: "up" | "down";
+  durationMs?: number; // duration in ms for a full loop
 }
 
 const VISIBLE_COUNT = 3;
 
-// Helper to get circular index
-const mod = (n: number, m: number) => ((n % m) + m) % m;
-
 const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
   cards,
   direction,
-  intervalMs = 4500, // even slower by default
+  durationMs = 18000, // 18 seconds for a full loop
 }) => {
-  const [startIdx, setStartIdx] = useState(0);
-  const [isSliding, setIsSliding] = useState(false);
+  const columnRef = useRef<HTMLDivElement>(null);
+  const [cardHeights, setCardHeights] = useState<number[]>([]);
+  const [totalHeight, setTotalHeight] = useState(0);
 
-  // Animation duration for css transition
-  const TRANSITION_MS = 1700;
-
-  // Array of visible + 1 cards for stacking
-  const circularCards = useMemo(() => {
-    const result: FeedbackCardProps[] = [];
-    for (let i = 0; i < VISIBLE_COUNT + 1; i++) {
-      let idx = direction === "down"
-        ? mod(startIdx + i, cards.length)
-        : mod(startIdx + cards.length - i, cards.length);
-      result.push(cards[idx]);
-    }
-    return result;
-  }, [cards, direction, startIdx]);
-
-  // Animate column motion on interval
+  // Measure each card to get total column height
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIsSliding(true);
-      setTimeout(() => {
-        setStartIdx((prev) =>
-          direction === "down"
-            ? mod(prev + 1, cards.length)
-            : mod(prev - 1, cards.length)
-        );
-        setIsSliding(false);
-      }, TRANSITION_MS);
-    }, intervalMs);
-    return () => clearInterval(timer);
-    // eslint-disable-next-line
-  }, [cards.length, direction, intervalMs]);
+    if (!columnRef.current) return;
+    const cardEls = Array.from(columnRef.current.children) as HTMLElement[];
+    const heights = cardEls.map((el) => el.getBoundingClientRect().height);
+    setCardHeights(heights);
+    setTotalHeight(heights.reduce((a, b) => a + b, 0));
+  }, [cards]);
 
-  // Determine offset for sliding
-  const offset = isSliding ? (direction === "down" ? 1 : -1) : 0;
+  // Reset animation on cards/config change
+  useEffect(() => {
+    if (!columnRef.current) return;
+    columnRef.current.style.animation = "none";
+    // Trigger reflow
+    void columnRef.current.offsetWidth;
+    columnRef.current.style.animation = `${direction === "down" ? "column-down" : "column-up"} ${durationMs}ms linear infinite`;
+  }, [cards, totalHeight, direction, durationMs]);
 
-  // Fading mask for top & bottom
-  const FADE_SIZE = 48;
+  // Duplicate card list (for seamless scroll loop)
+  const displayCards = [...cards, ...cards];
+
+  // Fading mask height (px)
+  const FADE_SIZE = 60;
 
   return (
     <div
@@ -69,22 +51,24 @@ const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
         maxHeight: "80vh",
       }}
     >
+      {/* Animated column */}
       <div
-        className="flex flex-col gap-6 transition-transform"
+        ref={columnRef}
+        className="flex flex-col gap-6"
         style={{
-          transform: `translateY(${-offset * 100}%)`,
-          transition: isSliding 
-            ? `transform ${TRANSITION_MS}ms cubic-bezier(0.65,0,0.35,1)`
-            : "none",
-          willChange: "transform",
+          animation: `${direction === "down" ? "column-down" : "column-up"} ${durationMs}ms linear infinite`,
         }}
       >
-        {circularCards.map((card, idx) => (
-          <FeedbackCard key={card.url + "_" + idx} {...card} />
+        {displayCards.map((card, idx) => (
+          <FeedbackCard
+            key={card.url + "_" + idx}
+            {...card}
+          />
         ))}
       </div>
       {/* Fade overlay for top & bottom for circular visual effect */}
       <div
+        aria-hidden="true"
         className="pointer-events-none absolute left-0 w-full"
         style={{
           height: FADE_SIZE,
@@ -94,6 +78,7 @@ const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
         }}
       />
       <div
+        aria-hidden="true"
         className="pointer-events-none absolute left-0 w-full"
         style={{
           height: FADE_SIZE,
@@ -102,6 +87,19 @@ const FeedbackColumn: React.FC<FeedbackColumnProps> = ({
           zIndex: 10,
         }}
       />
+      {/* Keyframes injected for column scroll */}
+      <style>
+        {`
+          @keyframes column-down {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+          }
+          @keyframes column-up {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0); }
+          }
+        `}
+      </style>
     </div>
   );
 };

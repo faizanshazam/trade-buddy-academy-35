@@ -158,7 +158,7 @@ export const TraderFeedbackCarousel: React.FC = () => {
   const feedbackSectionId = "feedback-carousel-section";
 
   // Scroll-to-section on first page scroll
-  useEffect(() => {
+  React.useEffect(() => {
     let hasJumped = false;
     const handleScroll = () => {
       if (!hasJumped) {
@@ -173,7 +173,7 @@ export const TraderFeedbackCarousel: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Layout: take full screen by default, more screen area for feedback!
+  // Very tall to emphasize carousel
   return (
     <section
       id={feedbackSectionId}
@@ -185,22 +185,21 @@ export const TraderFeedbackCarousel: React.FC = () => {
           Where we shine
         </h2>
         <div className="w-full flex flex-col sm:flex-row gap-8 justify-center items-stretch relative h-full min-h-[60vh]">
-          {/* Fade overlays are in the column for even better visual */}
           <FeedbackColumn
             cards={cols[0]}
             direction="down"
-            intervalMs={5000}
-            />
+            durationMs={20000}
+          />
           <FeedbackColumn
             cards={cols[1]}
             direction="up"
-            intervalMs={5000}
-            />
+            durationMs={21000}
+          />
           <FeedbackColumn
             cards={cols[2]}
             direction="down"
-            intervalMs={5000}
-            />
+            durationMs={22800}
+          />
         </div>
       </div>
     </section>
