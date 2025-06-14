@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface RequestCallDialogProps {
   buttonClassName?: string;
@@ -74,7 +81,7 @@ export const RequestCallDialog: React.FC<RequestCallDialogProps> = ({ traderName
             </div>
           </div>
 
-          {/* DatePicker and Time Window logic */}
+          {/* DatePicker and Custom Time Window */}
           <div className="space-y-2">
             {!date ? (
               <>
@@ -110,20 +117,29 @@ export const RequestCallDialog: React.FC<RequestCallDialogProps> = ({ traderName
                 </div>
                 <div className="mt-2">
                   <Label htmlFor="call-time">Preferred Time Window</Label>
-                  <select
-                    id="call-time"
+                  <Select
                     value={timeWindow}
-                    onChange={(e) => setTimeWindow(e.target.value)}
+                    onValueChange={setTimeWindow}
                     required
-                    className="w-full border px-3 py-2 rounded bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary"
                   >
-                    <option value="">Select a time window</option>
-                    {TIME_WINDOWS.map((slot) => (
-                      <option key={slot} value={slot}>
-                        {slot}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder="Select a time window"
+                        className="text-base"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_WINDOWS.map((slot) => (
+                        <SelectItem
+                          key={slot}
+                          value={slot}
+                          className="text-base"
+                        >
+                          {slot}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             )}
