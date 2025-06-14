@@ -111,6 +111,10 @@ const StudentDashboard = () => {
     }
   ];
 
+  const handleOpenPrivateJournal = () => {
+    setIsPrivateJournalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fb]">
       <Navigation />
@@ -131,20 +135,27 @@ const StudentDashboard = () => {
                   Upcoming Classes
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-6 pb-6">
-                {upcomingClasses.map((class_item) => (
-                  <div
-                    key={class_item.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-gray-200 rounded-lg px-5 py-4"
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="font-semibold text-gray-900 text-base">{class_item.title}</h3>
-                      <span className="text-sm text-gray-500 mb-0.5">with {class_item.instructor}</span>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Calendar className="w-4 h-4" />
-                        <span>{class_item.date} at {class_item.time}</span>
+              <CardContent>
+                <div className="space-y-4">
+                  {upcomingClasses.map((class_item) => (
+                    <div key={class_item.id} className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{class_item.title}</h3>
+                          <p className="text-sm text-gray-600">with {class_item.instructor}</p>
+                        </div>
+                        <Badge className="ml-4">{class_item.type}</Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{class_item.date} at {class_item.time}</span>
+                        </div>
                         <span>•</span>
-                        <span>{class_item.duration}</span>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{class_item.duration}</span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-2 min-w-[130px]">
@@ -171,16 +182,38 @@ const StudentDashboard = () => {
                   My Courses
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 px-6 pb-6">
-                {enrolledCourses.map((course) => (
-                  <div
-                    key={course.id}
-                    className="bg-white border border-gray-200 rounded-lg px-5 py-4 flex flex-col gap-3"
-                  >
-                    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2 mb-2">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-0.5">{course.title}</h3>
-                        <span className="text-sm text-gray-500">by {course.instructor}</span>
+              <CardContent>
+                <div className="space-y-6">
+                  {enrolledCourses.map((course) => (
+                    <div key={course.id} className="p-4 border border-gray-200 rounded-lg">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{course.title}</h3>
+                          <p className="text-sm text-gray-600">by {course.instructor}</p>
+                        </div>
+                        <span className="text-sm text-blue-600 font-medium ml-4">{course.progress}% complete</span>
+                      </div>
+                      
+                      <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${course.progress}%` }}
+                        ></div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm text-gray-600 mb-4">
+                        <span>{course.completedHours}/{course.totalHours} hours completed</span>
+                        <span>Next class: {course.nextClass}</span>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2">
+                        <Button size="sm" variant="outline">
+                          <Play className="w-4 h-4 mr-2" />
+                          Continue Learning
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
                       </div>
                       <span className="text-sm text-blue-600 font-medium">{course.progress}% complete</span>
                     </div>
@@ -220,18 +253,39 @@ const StudentDashboard = () => {
               <CardHeader className="pb-2 px-6 pt-6">
                 <CardTitle className="text-xl font-bold">Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="px-6 pb-6">
-                <div className="flex flex-col gap-2">
-                  {quickActions.map((action, idx) =>
-                    <Button
-                      key={action.label}
-                      className={`w-full justify-start font-medium text-base rounded ${action.primary ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-white border text-gray-900 hover:bg-gray-50"}`}
-                      variant={action.primary ? "default" : "outline"}
-                      onClick={action.onClick}
-                    >
-                      {action.icon}{action.label}
-                    </Button>
-                  )}
+              <CardContent>
+                <div className="space-y-3">
+                  <Button 
+                    className="w-full justify-start bg-blue-600 hover:bg-blue-700" 
+                    onClick={handleOpenPrivateJournal}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Private Journal
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => navigate('/courses')}
+                  >
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Browse More Courses
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => navigate('/explore')}
+                  >
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Book 1:1 Session
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => navigate('/contact')}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Contact Support
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -244,26 +298,20 @@ const StudentDashboard = () => {
                   Batch Chats
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-6 pb-6">
-                {activeChats.map((chat) => (
-                  <div
-                    key={chat.id}
-                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white border border-gray-200 rounded-lg px-4 py-3 gap-2 hover:border-blue-300 transition-colors cursor-pointer"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-gray-900 text-sm">{chat.name}</h4>
+              <CardContent>
+                <div className="space-y-3">
+                  {activeChats.map((chat) => (
+                    <div key={chat.id} className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors cursor-pointer">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium text-gray-900 text-sm flex-1">{chat.name}</h4>
                         {chat.unreadCount > 0 && (
-                          <Badge
-                            variant="secondary"
-                            className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5"
-                          >
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs ml-2">
                             {chat.unreadCount}
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-gray-600 mb-1 truncate">{chat.lastMessage}</p>
-                      <span className="text-xs text-gray-400">{chat.time}&nbsp;&nbsp;•&nbsp;{chat.detail}</span>
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{chat.lastMessage}</p>
+                      <span className="text-xs text-gray-400">{chat.time}</span>
                     </div>
                   </div>
                 ))}
