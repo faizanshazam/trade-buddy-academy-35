@@ -1,7 +1,8 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { Linkedin, Twitter } from "lucide-react";
 
-// Expanded feedback data for richer carousel
+// Expanded feedback data (as before)
 const FEEDBACKS = [
   {
     id: 1,
@@ -107,7 +108,7 @@ const COL_COUNT = 3;
 type Feedback = typeof FEEDBACKS[number];
 
 function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
-  // "Deal" feedbacks round robin into columns, so each col cycles its own posts
+  // Distribute round-robin
   const columns: T[][] = Array.from({ length: colCount }, () => []);
   items.forEach((item, idx) => {
     columns[idx % colCount].push(item);
@@ -115,42 +116,52 @@ function splitIntoColumns<T>(items: T[], colCount: number): T[][] {
   return columns;
 }
 
-// Each column cycles independently. Give each column a slight offset for variety.
-const COL_INTERVALS = [3200, 2600, 3500]; // ms, one for each col
+// Animate smoothly upward with phase offset for each column
+const COL_INTERVAL = 2300; // ms, one shared interval
 
 export const TraderFeedbackCarousel: React.FC = () => {
   const cols = splitIntoColumns(FEEDBACKS, COL_COUNT);
+  const colLengths = cols.map(col => col.length);
 
-  // Each column: keep a start index for visible cards
-  const [startIndices, setStartIndices] = useState([0, 0, 0]);
-  const timeoutRefs = useRef<Array<NodeJS.Timeout | null>>([null, null, null]);
+  // Each column has its own index, start at a different phase
+  const [startIndices, setStartIndices] = useState([
+    0,
+    Math.floor(colLengths[1] / 3),
+    Math.floor(colLengths[2] / 2),
+  ]);
+  // For triggering transition effect after mount
+  const [isTransitioning, setIsTransitioning] = useState([false, false, false]);
+  // For sliding animation
+  const [slideOffsets, setSlideOffsets] = useState([0, 0, 0]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Set up timers for each column independently
-    timeoutRefs.current.forEach((ref, col) => {
-      if (ref) clearTimeout(ref);
-      timeoutRefs.current[col] = setTimeout(() => {
-        setStartIndices((prev) => {
-          const newIndices = [...prev];
-          newIndices[col] = (prev[col] + 1) % cols[col].length;
-          return newIndices;
-        });
-      }, COL_INTERVALS[col]);
-    });
+    // One shared timer
+    intervalRef.current = setInterval(() => {
+      setSlideOffsets([1, 1, 1]);
+      setIsTransitioning([true, true, true]);
+      setTimeout(() => {
+        setStartIndices((prev) =>
+          prev.map((idx, col) => (idx + 1) % colLengths[col])
+        );
+        setSlideOffsets([0, 0, 0]);
+        setIsTransitioning([false, false, false]);
+      }, 480); // matches CSS transition duration
+    }, COL_INTERVAL);
 
     return () => {
-      timeoutRefs.current.forEach((ref) => ref && clearTimeout(ref));
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-    // Only depend on startIndices so that every col cycles smoothly
     // eslint-disable-next-line
-  }, [startIndices.join("|")]);
+  }, []);
 
-  // Get the current three cards for each column, cycling
+  // Compute the visible cards for a column for circular logic
   const getColCards = (col: number) => {
+    const data = cols[col];
+    const idx = startIndices[col];
     const arr: Feedback[] = [];
-    const colData = cols[col];
-    for (let i = 0; i < CARDS_PER_COL; i++) {
-      arr.push(colData[(startIndices[col] + i) % colData.length]);
+    for (let i = 0; i < CARDS_PER_COL + 1; i++) {
+      arr.push(data[(idx + i) % data.length]);
     }
     return arr;
   };
@@ -163,47 +174,62 @@ export const TraderFeedbackCarousel: React.FC = () => {
       <div className="relative max-w-5xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[0, 1, 2].map((colIdx) => (
-            <div key={colIdx} className="flex flex-col gap-6">
-              {getColCards(colIdx).map((fb) => (
-                <a
-                  key={fb.id}
-                  href={fb.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group card-feedback block bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 hover:scale-105 animate-fade-in"
-                  style={{
-                    animation: "fade-in 0.7s cubic-bezier(0.4,0,0.6,1)",
-                  }}
-                >
-                  <div className="flex items-center gap-3 p-5 pb-3">
-                    <img
-                      src={fb.avatar}
-                      alt={fb.name}
-                      className="w-12 h-12 rounded-full border border-gray-200"
-                    />
-                    <div>
-                      <p className="font-semibold text-gray-800">{fb.name}</p>
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        {fb.platform === "linkedin" ? (
-                          <Linkedin className="w-4 h-4 text-blue-700" />
-                        ) : (
-                          <Twitter className="w-4 h-4 text-blue-500" />
-                        )}
-                        <span className="ml-1">
-                          {fb.platform === "linkedin" ? "LinkedIn" : "X"}
-                        </span>
+            <div key={colIdx} className="overflow-hidden h-[320px] flex flex-col">
+              <div
+                className={`flex flex-col gap-6 transition-transform duration-500 will-change-transform`}
+                style={{
+                  transform: `translateY(-${
+                    slideOffsets[colIdx]
+                      ? (100 / CARDS_PER_COL)
+                      : 0
+                  }%)`,
+                  transitionTimingFunction: "cubic-bezier(0.55,0,0.45,1)",
+                  transitionDuration: isTransitioning[colIdx] ? "480ms" : "0ms",
+                  height: "100%", // ensure height remains stable
+                }}
+              >
+                {getColCards(colIdx).map((fb, cardIdx) => (
+                  <a
+                    key={fb.id + "_" + cardIdx}
+                    href={fb.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group card-feedback block bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 hover:scale-105 animate-fade-in"
+                    style={{
+                      animation: "fade-in 0.7s cubic-bezier(0.4,0,0.6,1)",
+                      minHeight: "96px"
+                    }}
+                  >
+                    <div className="flex items-center gap-3 p-5 pb-3">
+                      <img
+                        src={fb.avatar}
+                        alt={fb.name}
+                        className="w-12 h-12 rounded-full border border-gray-200"
+                      />
+                      <div>
+                        <p className="font-semibold text-gray-800">{fb.name}</p>
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          {fb.platform === "linkedin" ? (
+                            <Linkedin className="w-4 h-4 text-blue-700" />
+                          ) : (
+                            <Twitter className="w-4 h-4 text-blue-500" />
+                          )}
+                          <span className="ml-1">
+                            {fb.platform === "linkedin" ? "LinkedIn" : "X"}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="px-5 pb-6">
-                    <p className="text-gray-600 text-sm">{fb.content}</p>
-                  </div>
-                </a>
-              ))}
+                    <div className="px-5 pb-6">
+                      <p className="text-gray-600 text-sm">{fb.content}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
             </div>
           ))}
         </div>
-        {/* Simple indicator dots for each column */}
+        {/* Indicator dots for each column */}
         <div className="flex justify-center gap-2 mt-4">
           {[0, 1, 2].map((colIdx) => (
             <div key={colIdx} className="flex gap-1">
@@ -228,3 +254,5 @@ export const TraderFeedbackCarousel: React.FC = () => {
 };
 
 export default TraderFeedbackCarousel;
+
+// NOTE: This file is now very long (230+ lines). Consider refactoring into smaller focused components: e.g. FeedbackColumn, FeedbackCard, etc.
