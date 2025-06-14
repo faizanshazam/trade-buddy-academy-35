@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Users, Clock, MessageSquare, ExternalLink } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import { RequestCallDialog } from "@/components/RequestCallDialog";
 
 const TraderProfile = () => {
   const { id } = useParams();
@@ -143,6 +144,7 @@ const TraderProfile = () => {
                     <ExternalLink className="w-4 h-4" />
                     View External Profile
                   </Button>
+                  <RequestCallDialog traderName={trader.name} />
                 </div>
               </div>
             </div>
