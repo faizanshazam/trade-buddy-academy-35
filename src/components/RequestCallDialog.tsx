@@ -39,6 +39,11 @@ export const RequestCallDialog: React.FC<RequestCallDialogProps> = ({ traderName
     // You can show toast or handle further actions here
   };
 
+  const handleChangeDate = () => {
+    setDate(undefined);
+    setTimeWindow("");
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -69,42 +74,59 @@ export const RequestCallDialog: React.FC<RequestCallDialogProps> = ({ traderName
             </div>
           </div>
 
+          {/* DatePicker and Time Window logic */}
           <div className="space-y-2">
-            <Label htmlFor="call-date">Select Date</Label>
-            <div className="flex gap-2 items-center">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                initialFocus
-                className="p-3 pointer-events-auto bg-background rounded"
-              />
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {date ? (
-                  <span>Chosen: {format(date, "PPP")}</span>
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="call-time">Preferred Time Window</Label>
-            <select
-              id="call-time"
-              value={timeWindow}
-              onChange={(e) => setTimeWindow(e.target.value)}
-              required
-              className="w-full border px-3 py-2 rounded bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">Select a time window</option>
-              {TIME_WINDOWS.map((slot) => (
-                <option key={slot} value={slot}>
-                  {slot}
-                </option>
-              ))}
-            </select>
+            {!date ? (
+              <>
+                <Label htmlFor="call-date">Select Date</Label>
+                <div className="flex gap-2 items-center">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    className="p-3 pointer-events-auto bg-background rounded"
+                  />
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {date ? <span>Chosen: {format(date, "PPP")}</span> : <span>Pick a date</span>}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Selected Date:</Label>
+                    <span className="ml-2 text-base font-medium">{format(date, "PPP")}</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleChangeDate}
+                    className="text-xs px-2 py-0 h-8"
+                  >
+                    Change Date
+                  </Button>
+                </div>
+                <div className="mt-2">
+                  <Label htmlFor="call-time">Preferred Time Window</Label>
+                  <select
+                    id="call-time"
+                    value={timeWindow}
+                    onChange={(e) => setTimeWindow(e.target.value)}
+                    required
+                    className="w-full border px-3 py-2 rounded bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">Select a time window</option>
+                    {TIME_WINDOWS.map((slot) => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
           <DialogFooter className="gap-2 sm:gap-4">
