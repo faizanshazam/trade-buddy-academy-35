@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -72,9 +73,10 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        {/* Fix: Make all buttons wrap flexibly and stay inside the card, even on smaller screens */}
+        <div className="flex flex-wrap gap-2">
           <Button 
-            className="flex-1 bg-blue-600 hover:bg-blue-700" 
+            className="flex-1 min-w-[120px] bg-blue-600 hover:bg-blue-700" 
             size="sm"
             onClick={handleViewProfile}
           >
@@ -84,15 +86,18 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
             variant="outline" 
             size="sm"
             onClick={handleViewCourses}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 flex-1 min-w-[120px]"
           >
             <BookOpen className="w-4 h-4" />
             Explore Courses
           </Button>
-          <RequestCallDialog
-            traderName={trader.name}
-            triggerClassName="flex-1"
-          />
+          {/* RequestCallDialog button will flex and never overflow */}
+          <div className="flex-1 min-w-[120px]">
+            <RequestCallDialog
+              traderName={trader.name}
+              triggerClassName="w-full"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
