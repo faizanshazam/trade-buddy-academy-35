@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,8 +32,8 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
   };
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer w-full h-full">
-      <CardContent className="p-6 flex flex-col h-full">
+    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+      <CardContent className="p-6">
         <div className="flex items-start gap-4 mb-4" onClick={handleViewProfile}>
           <img
             src={trader.photo}
@@ -72,31 +71,28 @@ export const TraderCard = ({ trader }: TraderCardProps) => {
             <span>{trader.studentsCount} students</span>
           </div>
         </div>
-        
-        {/* Proper dynamic grid for buttons */}
-        <div className="mt-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full">
-            <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700 font-semibold"
-              size="sm"
-              onClick={handleViewProfile}
-            >
-              View Profile
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleViewCourses}
-              className="w-full flex items-center gap-2 font-semibold"
-            >
-              <BookOpen className="w-4 h-4" />
-              Explore Courses
-            </Button>
-            <RequestCallDialog
-              traderName={trader.name}
-              triggerClassName="w-full font-semibold"
-            />
-          </div>
+
+        <div className="flex gap-2">
+          <Button 
+            className="flex-1 bg-blue-600 hover:bg-blue-700" 
+            size="sm"
+            onClick={handleViewProfile}
+          >
+            View Profile
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleViewCourses}
+            className="flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            Explore Courses
+          </Button>
+          <RequestCallDialog
+            traderName={trader.name}
+            triggerClassName="flex-1"
+          />
         </div>
       </CardContent>
     </Card>
