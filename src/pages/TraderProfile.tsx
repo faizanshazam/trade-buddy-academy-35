@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -81,8 +82,6 @@ const TraderProfile = () => {
   const handleBackgroundUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-<<<<<<< HEAD
-<<<<<<< HEAD
       console.log('Background file selected:', file.name);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -92,22 +91,6 @@ const TraderProfile = () => {
       };
       reader.onerror = (error) => {
         console.error('Error reading background file:', error);
-=======
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setBackgroundImage(e.target?.result as string);
->>>>>>> 3965d7d (feat: Add trader profile enhancements)
-=======
-      console.log('Background file selected:', file.name);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        console.log('Background file loaded successfully');
-        setBackgroundImage(result);
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading background file:', error);
->>>>>>> 48f7158 (Fix: Image upload functionality)
       };
       reader.readAsDataURL(file);
     }
