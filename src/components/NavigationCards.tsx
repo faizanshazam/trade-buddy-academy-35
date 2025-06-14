@@ -11,7 +11,7 @@ export const NavigationCards = () => {
       description: "Comprehensive trading courses from basics to advanced strategies",
       color: "bg-blue-500",
       hoverColor: "hover:bg-blue-600",
-      link: "/explore"
+      link: "/courses"
     },
     {
       icon: User,

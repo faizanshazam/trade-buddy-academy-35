@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Users, Clock, MessageSquare, ExternalLink, Upload, TrendingUp, BarChart3, X } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const TraderProfile = () => {
   const { id } = useParams();
@@ -12,6 +11,7 @@ const TraderProfile = () => {
   const [backgroundImage, setBackgroundImage] = useState<string>("");
   const [tradingCharts, setTradingCharts] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [testImage, setTestImage] = useState<string | null>(null); // For debug
 
   // Mock trader data
   const trader = {
@@ -113,6 +113,7 @@ const TraderProfile = () => {
     }
   };
 
+  // --- Minimal, debug-friendly image upload handler ---
   const handleChartUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -139,7 +140,10 @@ const TraderProfile = () => {
       // Reset the input value
       event.target.value = '';
     }
+    event.target.value = '';
+    console.log("File input value reset");
   };
+  // --- End debug handler ---
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
@@ -273,6 +277,14 @@ const TraderProfile = () => {
                 className="hidden"
               />
             </div>
+
+            {/* Debug: Show test image */}
+            {testImage && (
+              <div className="mb-4">
+                <p className="text-green-700">Test image loaded below (debug):</p>
+                <img src={testImage} alt="Test" style={{ maxWidth: 200, border: "2px solid green" }} />
+              </div>
+            )}
 
             {tradingCharts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
